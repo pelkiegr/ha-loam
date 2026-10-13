@@ -89,3 +89,52 @@ def test_status_normalization(status: str, key: str, rideable: bool) -> None:
 
 def test_unknown_status_is_flagged() -> None:
     assert not conditions_with_status("MUDDY").is_known_status
+
+
+def test_parses_drying_timeline() -> None:
+    conditions = parse_trail_page(
+        "green-mountain-park", load_fixture("green_mountain_park.html")
+    )
+    timeline = conditions.timeline
+
+    assert timeline is not None
+    assert timeline.start == datetime(2026, 10, 3, 7, tzinfo=UTC)
+    assert len(timeline.dryness) == len(timeline.statuses) == len(timeline.rain_in) == 372
+    assert timeline.forecast_from_index == 249
+    assert timeline.dryness_at(datetime(2026, 10, 3, 7, 30, tzinfo=UTC)) == 0.725
+    assert timeline.dryness_at(datetime(2026, 9, 1, tzinfo=UTC)) is None
+
+
+def test_next_change_skips_past_and_low_confidence() -> None:
+    conditions = parse_trail_page(
+        "green-mountain-park", load_fixture("green_mountain_park.html")
+    )
+
+    change = conditions.next_change(datetime(2026, 10, 14, 5, tzinfo=UTC))
+
+    assert change is not None
+    assert change.at == datetime(2026, 10, 14, 18, tzinfo=UTC)
+    assert (change.from_status, change.to_status) == ("CAUTION", "STAY OFF")
+
+
+def test_daily_weather_uses_local_day_start() -> None:
+    conditions = parse_trail_page(
+        "green-mountain-park", load_fixture("green_mountain_park.html")
+    )
+    first_day = conditions.daily[0]
+
+    assert first_day.day.isoformat() == "2026-10-03"
+    assert first_day.starts_at == datetime(2026, 10, 3, 7, tzinfo=UTC)
+    assert first_day.temp_max_c == 25.4
+
+
+def test_page_without_chart_still_parses() -> None:
+    html = (
+        '<meta property="og:image" content="https://x/share-card?status=DRY" />'
+    )
+
+    conditions = parse_trail_page("x", html)
+
+    assert conditions.timeline is None
+    assert conditions.changes == ()
+    assert conditions.next_change(datetime(2026, 1, 1, tzinfo=UTC)) is None

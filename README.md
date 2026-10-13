@@ -31,9 +31,39 @@ Each trail network is a device with:
 | Outlook | Expected rideable in ~1 hour |
 | Note | No significant rain before then. |
 | Last rain | 0.9″ of rain, 11h ago |
+| Dryness | 83 % (Loam's 0–1 drying model as a percentage) |
+| Next change | when the next confirmed status change is forecast; `to_status` attribute |
 | Modeled at (diagnostic) | timestamp of Loam's latest model run |
 
 Conditions refresh every 30 minutes; Loam models them hourly.
+
+## Dashboard cards
+
+The integration ships two cards and loads them automatically. No extra
+resource or HACS frontend install is needed. Add them from the dashboard card
+picker ("Loam trail" and "Loam trails") or in YAML:
+
+```yaml
+type: custom:loam-trail-card
+entity: sensor.green_mountain_park_status
+days_back: 3          # optional, history shown before "now" (1–10)
+```
+
+```yaml
+type: custom:loam-trails-card
+title: Trail conditions   # optional
+entities:
+  - sensor.green_mountain_park_status
+  - sensor.dakota_ridge_status
+```
+
+Any entity of a trail works; the card looks up the trail it belongs to.
+
+![Loam cards](https://raw.githubusercontent.com/pelkiegr/ha-loam/main/docs/cards.png)
+
+The trail card's chart shows hourly modeled dryness colored by status, with
+the forecast dashed, hourly rain as blue bars, and each day's high and rain
+total underneath. Click a trail name or row to open its more-info dialog.
 
 ## Development
 

@@ -28,6 +28,12 @@
       },
       "last_rain": {
         "default": "mdi:weather-rainy"
+      },
+      "dryness": {
+        "default": "mdi:water-percent"
+      },
+      "next_change": {
+        "default": "mdi:timeline-clock-outline"
       }
     }
   }

@@ -11,13 +11,15 @@ from homeassistant.components.sensor import (
     SensorDeviceClass,
     SensorEntity,
     SensorEntityDescription,
+    SensorStateClass,
 )
-from homeassistant.const import EntityCategory
+from homeassistant.const import PERCENTAGE, EntityCategory
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 from homeassistant.helpers.typing import StateType
+from homeassistant.util import dt as dt_util
 
-from .api import KNOWN_STATUSES, TrailConditions
+from .api import KNOWN_STATUSES, TrailConditions, status_key
 from .coordinator import LoamConfigEntry, LoamCoordinator
 from .entity import LoamEntity
 
@@ -38,6 +40,28 @@ def _status_attributes(conditions: TrailConditions) -> dict[str, Any]:
     return {"label": conditions.status_label, "raw_status": conditions.status}
 
 
+def _dryness_percent(conditions: TrailConditions) -> float | None:
+    if conditions.timeline is None:
+        return None
+    dryness = conditions.timeline.dryness_at(dt_util.utcnow())
+    return None if dryness is None else round(dryness * 100, 1)
+
+
+def _next_change_at(conditions: TrailConditions) -> datetime | None:
+    change = conditions.next_change(dt_util.utcnow())
+    return None if change is None else change.at
+
+
+def _next_change_attributes(conditions: TrailConditions) -> dict[str, Any]:
+    change = conditions.next_change(dt_util.utcnow())
+    if change is None:
+        return {"to_status": None, "from_status": None}
+    return {
+        "to_status": status_key(change.to_status),
+        "from_status": status_key(change.from_status),
+    }
+
+
 SENSORS: tuple[LoamSensorEntityDescription, ...] = (
     LoamSensorEntityDescription(
         key="status",
@@ -46,6 +70,21 @@ SENSORS: tuple[LoamSensorEntityDescription, ...] = (
         options=list(KNOWN_STATUSES),
         value_fn=_known_status,
         attributes_fn=_status_attributes,
+    ),
+    LoamSensorEntityDescription(
+        key="dryness",
+        translation_key="dryness",
+        native_unit_of_measurement=PERCENTAGE,
+        state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=0,
+        value_fn=_dryness_percent,
+    ),
+    LoamSensorEntityDescription(
+        key="next_change",
+        translation_key="next_change",
+        device_class=SensorDeviceClass.TIMESTAMP,
+        value_fn=_next_change_at,
+        attributes_fn=_next_change_attributes,
     ),
     LoamSensorEntityDescription(
         key="outlook",

@@ -1,12 +1,19 @@
 {
   "domain": "loam",
   "name": "Loam Ride Conditions",
-  "codeowners": ["@pelkiegr"],
+  "codeowners": [
+    "@pelkiegr"
+  ],
   "config_flow": true,
+  "dependencies": [
+    "frontend",
+    "http",
+    "websocket_api"
+  ],
   "documentation": "https://github.com/pelkiegr/ha-loam",
   "integration_type": "service",
   "iot_class": "cloud_polling",
   "issue_tracker": "https://github.com/pelkiegr/ha-loam/issues",
   "requirements": [],
-  "version": "0.1.1"
+  "version": "0.2.0"
 }

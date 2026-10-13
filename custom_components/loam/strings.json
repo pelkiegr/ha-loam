@@ -42,6 +42,20 @@
           "frozen": "Frozen"
         }
       },
+      "dryness": {
+        "name": "Dryness"
+      },
+      "next_change": {
+        "name": "Next change",
+        "state_attributes": {
+          "to_status": {
+            "name": "Changes to"
+          },
+          "from_status": {
+            "name": "Changes from"
+          }
+        }
+      },
       "outlook": {
         "name": "Outlook"
       },
