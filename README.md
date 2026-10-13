@@ -15,7 +15,7 @@ its site.
    category **Integration**.
 2. Download **Loam Ride Conditions**, then restart Home Assistant.
 3. Settings → Devices & Services → **Add integration** → **Loam Ride Conditions**.
-4. Search by zip code or trail name and pick a network. Repeat for each network.
+4. Search by zip code or trail name and tick one or more networks.
 
 Only networks with a public page on loamrideconditions.com can be added; some
 networks shown in the Loam app are app-only.

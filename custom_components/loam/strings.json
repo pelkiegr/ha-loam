@@ -9,16 +9,17 @@
         }
       },
       "network": {
-        "title": "Choose a trail network",
-        "description": "Only networks with a public page on loamrideconditions.com are listed.",
+        "title": "Choose trail networks",
+        "description": "Select one or more. Only networks with a public page on loamrideconditions.com are listed.",
         "data": {
-          "network_id": "Trail network"
+          "network_ids": "Trail networks"
         }
       }
     },
     "error": {
       "cannot_connect": "Could not reach loamrideconditions.com.",
-      "no_results": "No new trail networks with a public page matched that search."
+      "no_results": "No new trail networks with a public page matched that search.",
+      "none_selected": "Select at least one trail network."
     },
     "abort": {
       "already_configured": "This trail network is already configured."
