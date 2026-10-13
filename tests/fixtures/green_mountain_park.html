@@ -1,0 +1,2473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="stylesheet" href="/shared/site-layout.css" />
+<!-- Smart App Banner. app-argument carries this trail's own URL so opening the app
+     from the banner lands on this network (universal links already route
+     /trails/:id -> app/trails/[slug].js -> the network screen), not just Home. -->
+<meta name="apple-itunes-app" content="app-id=6777128177, app-argument=https://loamrideconditions.com/trails/green-mountain-park" />
+<link rel="preconnect" href="https://t.loamrideconditions.com" crossorigin /><style>
+.design-v2 #conditions{padding-top:68px;padding-bottom:62px}
+.design-v2 #conditions>.sec-head{max-width:780px;margin-bottom:28px}
+.design-v2 #conditions>.sec-head h2{font-size:clamp(30px,4vw,46px);letter-spacing:-.03em}
+.design-v2 #conditions>.outlook-card{background:transparent;border:0;border-radius:0;overflow:visible}
+.design-v2 #conditions>.outlook-card>.tl-caption{padding:0 0 18px;font-size:13px;color:var(--muted)}
+.design-v2 #conditions>.outlook-card>.timeline-scroll{border:1px solid var(--line);border-radius:16px;background:var(--card-bg);overflow-x:auto;overflow-y:hidden}
+.design-v2 #conditions>.outlook-card .timeline{min-width:720px}
+.design-v2 #conditions>.outlook-card .tl-rain{height:154px;padding-top:18px}
+.design-v2 #conditions>.outlook-card .tl-band{padding:18px 14px 14px}
+.design-v2 #conditions>.outlook-card .tl-legend{padding:2px 18px 16px}
+.design-v2 #terrain{padding:76px 0 72px;position:relative}
+.design-v2 #terrain::before{content:"";position:absolute;z-index:-1;top:0;bottom:0;left:50%;width:100vw;transform:translateX(-50%);background:linear-gradient(180deg,rgba(10,16,11,.72),rgba(25,31,26,0));border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.design-v2 #terrain .sec-head{display:block;margin-bottom:32px}
+.design-v2 #terrain .sec-head h2{font-size:clamp(34px,5vw,58px);max-width:12ch;letter-spacing:-.04em}
+.design-v2 #terrain .terrain-grid{grid-template-columns:minmax(0,1.08fr) minmax(360px,.92fr);gap:72px;align-items:start}
+.design-v2 #terrain .terrain-grid .prose{padding-top:8px}
+.design-v2 #terrain .terrain-grid .prose p{font-size:17px;line-height:1.78;max-width:52ch;color:#d0d9d1}
+.design-v2 #terrain .spec{border-radius:16px;background:rgba(8,13,9,.52);border-color:var(--line2);box-shadow:0 20px 60px rgba(0,0,0,.18)}
+.design-v2 #terrain .spec h3{padding:16px 20px;font-size:12px;letter-spacing:2.4px;color:var(--green);border-color:var(--line)}
+.design-v2 #terrain .spec .row{padding:15px 20px;min-height:58px}
+.design-v2 #terrain .spec dt{font-size:13px}
+.design-v2 #terrain .spec dd{font-size:14px}
+.design-v2 #terrain details.more{margin:38px 0 0;border-top:1px solid var(--line)}
+.design-v2 #terrain details.more summary{padding:18px 0;font-size:12px;letter-spacing:2.3px}
+.design-v2 #terrain details.more[open] .factor-grid{margin-top:4px}
+.design-v2 #terrain .factor-grid{border-radius:14px;grid-template-columns:repeat(3,1fr);background:rgba(8,13,9,.42)}
+.design-v2 #terrain .factor{padding:22px 20px;min-height:190px}
+.design-v2 #terrain .factor h4{font-size:13px}
+.design-v2 #terrain .factor p{font-size:13px;line-height:1.65}
+.design-v2 #trails{padding:78px 0 74px;position:relative}
+.design-v2 #trails::before{content:"";position:absolute;z-index:-1;top:0;bottom:0;left:50%;width:100vw;transform:translateX(-50%);background:#121812;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.design-v2 #trails .sec-head{margin-bottom:30px}
+.design-v2 #trails .sec-head h2{font-size:clamp(32px,4.5vw,52px);letter-spacing:-.035em}
+/* The trails chips and the nearby list are the two blocks with comparable
+   mass, so they pair as columns; the steward credit (one sentence) cannot
+   hold a column on its own and renders as a full-width strip below (see
+   .around-stewards). */
+.design-v2 #trails .around-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(280px,.92fr);column-gap:64px;align-items:start}
+.design-v2 #trails .around-grid>*+*{border-top:0}
+.design-v2 #trails .around-grid .around-row{padding:0}
+.design-v2 #trails .around-label{font-size:11px;letter-spacing:2.1px;margin-bottom:15px}
+.design-v2 #trails .trail-names{gap:10px 12px}
+.design-v2 #trails .trail-names li{background:rgba(255,255,255,.025);border-radius:7px;padding:10px 13px;font-size:13px;color:#d9e0da}
+.design-v2 #trails .around-note{font-size:12px;max-width:60ch;margin-top:16px}
+.design-v2 #trails .nb{padding:13px 0}
+.design-v2 #trails .nb-name{font-size:14px}
+.design-v2 #trails .nb-region{font-size:11px}
+.design-v2 #trails .region-link{margin-top:16px}
+/* The closing strip: quiet, full-width, sits below the grid on its own
+   hairline (from the shared .around-card>*+* rule in [slug].js). */
+.design-v2 #trails .around-stewards{margin-top:32px;padding-top:22px}
+.design-v2 #trails .around-stewards .around-label{font-size:11px;letter-spacing:2.1px}
+.design-v2 #trails .around-stewards .steward-credit{font-size:13.5px}
+.design-v2 .cta{margin:76px 0 0;padding:38px 42px;border-radius:18px;grid-template-columns:minmax(0,1fr) auto;min-height:150px;background:linear-gradient(110deg,rgba(65,212,122,.13),rgba(25,31,26,.7) 62%);border-color:rgba(65,212,122,.34)}
+.design-v2 .cta h2{font-size:clamp(24px,3vw,34px);letter-spacing:-.025em;margin:7px 0 7px}
+.design-v2 .cta p{font-size:14px;max-width:52ch;line-height:1.65}
+.design-v2 #embed{margin-top:74px;padding:38px 0 54px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.design-v2 #embed>summary{max-width:none;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;gap:24px}
+.design-v2 #embed>summary .embed-line{font-size:16px;max-width:54ch;margin-top:7px}
+.design-v2 #embed>summary .embed-open{font:600 12px var(--cond);letter-spacing:1.8px;text-transform:uppercase;padding-bottom:2px}
+.design-v2 #embed[open] .embed-body{padding-top:28px}
+.design-v2 #embed .embed-body{display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,.72fr);gap:46px;align-items:start}
+.design-v2 #embed .embed-preview{max-width:100%;margin:0;order:2}
+.design-v2 #embed .embed-copy-block{order:1}
+.design-v2 #embed .embed-themes{margin-top:20px}
+.design-v2 #faq{padding:76px 0 20px}
+.design-v2 #faq .sec-head{margin-bottom:28px}
+.design-v2 #faq .sec-head h2{font-size:clamp(30px,4vw,44px);letter-spacing:-.03em}
+.design-v2 #faq .qa{border-color:var(--line)}
+.design-v2 #faq .qa summary{padding:20px 34px 20px 0;font-size:16px;line-height:1.35}
+.design-v2 #faq .qa p{font-size:14px;line-height:1.72;max-width:70ch;padding-bottom:20px}
+@media(max-width:760px){
+  .design-v2 #terrain{padding:54px 0 50px}
+  .design-v2 #terrain .terrain-grid{grid-template-columns:1fr;gap:32px}
+  .design-v2 #terrain .terrain-grid .prose p{font-size:16px}
+  .design-v2 #terrain .factor-grid{grid-template-columns:1fr}
+  .design-v2 #terrain .factor{min-height:0}
+  .design-v2 #trails{padding:56px 0 52px}
+  .design-v2 #trails .around-grid{grid-template-columns:1fr;gap:0}
+  .design-v2 #trails .around-grid .around-row+.around-row{border-top:1px solid var(--line);padding-top:24px}
+  .design-v2 .cta{margin-top:52px;padding:28px 24px;grid-template-columns:1fr;gap:22px}
+  .design-v2 #embed{margin-top:52px;padding:30px 0 42px}
+  .design-v2 #embed>summary{grid-template-columns:1fr;gap:10px}
+  .design-v2 #embed .embed-body{grid-template-columns:1fr;gap:24px}
+  .design-v2 #embed .embed-preview{order:1}
+  .design-v2 #embed .embed-copy-block{order:2}
+  .design-v2 #faq{padding-top:54px}
+}
+/* <=680px: the #conditions rules above win over the shared .design-v2 .section
+   680px override in [slug].js (an id selector always beats a class one,
+   regardless of source order), so without this block the outlook card kept
+   its desktop-scale padding on a phone and read as mostly empty once the
+   no-rain window collapses the plot (tl-rain, above). Tightens the card
+   shell only: type sizes and touch targets are untouched. */
+@media(max-width:680px){
+  .design-v2 #conditions{padding-top:34px;padding-bottom:32px}
+  .design-v2 #conditions>.sec-head{margin-bottom:16px}
+  .design-v2 #conditions>.outlook-card>.tl-caption{padding:0 0 14px}
+  .design-v2 #conditions>.outlook-card>.timeline-scroll{border-radius:12px}
+  .design-v2 #conditions>.outlook-card .tl-band{padding:12px 12px 10px}
+  .design-v2 #conditions>.outlook-card .tl-legend{padding:0 12px 10px}
+}
+</style>
+<script src="/site-navigation.js" defer></script>
+<script src="/site-analytics.js" defer></script>
+<title>Green Mountain Park Trail Conditions | Loam</title>
+<meta name="description" content="Green Mountain Park trail conditions (Denver &amp; Golden, CO). Modeled riding conditions, recent rain and trail outlook." />
+<link rel="canonical" href="https://loamrideconditions.com/trails/green-mountain-park" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Loam" />
+<meta property="og:title" content="Green Mountain Park Trail Conditions | Loam" />
+<meta property="og:description" content="Green Mountain Park trail conditions (Denver &amp; Golden, CO). Modeled riding conditions, recent rain and trail outlook." />
+<meta property="og:url" content="https://loamrideconditions.com/trails/green-mountain-park" />
+<meta property="og:image" content="https://api.loamrideconditions.com/share-card?networkId=green-mountain-park&amp;name=Green+Mountain+Park&amp;status=DRY&amp;verdict=Rideable+now&amp;note=Good+window+for+the+next+%7E10+hours.&amp;location=Denver+%26+Golden%2C+CO&amp;lastRain=No+measurable+rain+in+the+past+week&amp;shareUrl=https%3A%2F%2Floamrideconditions.com%2Ftrails%2Fgreen-mountain-park&amp;updatedLabel=Updated+Tuesday%2C+October+13th%2C+2026+at+15%3A21+UTC%2C+modeled+hourly&amp;format=og" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content="Green Mountain Park live mountain bike trail conditions: DRY, Rideable now (Denver &amp; Golden, CO)" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Green Mountain Park Trail Conditions | Loam" />
+<meta name="twitter:description" content="Green Mountain Park trail conditions (Denver &amp; Golden, CO). Modeled riding conditions, recent rain and trail outlook." />
+<meta name="twitter:image" content="https://api.loamrideconditions.com/share-card?networkId=green-mountain-park&amp;name=Green+Mountain+Park&amp;status=DRY&amp;verdict=Rideable+now&amp;note=Good+window+for+the+next+%7E10+hours.&amp;location=Denver+%26+Golden%2C+CO&amp;lastRain=No+measurable+rain+in+the+past+week&amp;shareUrl=https%3A%2F%2Floamrideconditions.com%2Ftrails%2Fgreen-mountain-park&amp;updatedLabel=Updated+Tuesday%2C+October+13th%2C+2026+at+15%3A21+UTC%2C+modeled+hourly&amp;format=og" />
+<meta name="twitter:image:alt" content="Green Mountain Park live mountain bike trail conditions: DRY, Rideable now (Denver &amp; Golden, CO)" />
+<link rel="icon" href="/favicon-32.png" />
+<link rel="preload" as="font" type="font/woff2" href="/fonts/national-park-v4-latin.woff2" crossorigin />
+<link rel="preload" as="font" type="font/woff2" href="/fonts/barlow-condensed-v13-600-latin.woff2" crossorigin />
+<link rel="preload" as="image" type="image/webp" href="/maps/green-mountain-park.webp?v=1188caa3&cv=1188caa3" fetchpriority="high" />
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"TouristAttraction","@id":"https://loamrideconditions.com/trails/green-mountain-park#attraction","name":"Green Mountain Park","description":"Live mountain bike trail conditions for Green Mountain Park in Denver & Golden, CO: currently DRY (Rideable).","url":"https://loamrideconditions.com/trails/green-mountain-park","mainEntityOfPage":{"@id":"https://loamrideconditions.com/trails/green-mountain-park#webpage"},"geo":{"@type":"GeoCoordinates","latitude":39.6999,"longitude":-105.1777},"address":{"@type":"PostalAddress","addressRegion":"CO","addressCountry":"US"},"isAccessibleForFree":true,"publicAccess":true,"additionalType":"https://schema.org/Park","additionalProperty":[{"@type":"PropertyValue","name":"Trail condition","value":"DRY","description":"Rideable"},{"@type":"PropertyValue","name":"Condition observed at","value":"2026-10-13T15:21:42.678Z"}],"containsPlace":[{"@type":"Place","name":"Green Mountain"},{"@type":"Place","name":"Rooney Valley Trail"},{"@type":"Place","name":"Summit Loop"},{"@type":"Place","name":"North Access"},{"@type":"Place","name":"Box O Rox Trail"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","@id":"https://loamrideconditions.com/trails/green-mountain-park#webpage","url":"https://loamrideconditions.com/trails/green-mountain-park","mainEntity":{"@id":"https://loamrideconditions.com/trails/green-mountain-park#attraction"},"dateModified":"2026-10-13"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Can you ride Green Mountain Park right now?","acceptedAnswer":{"@type":"Answer","text":"The current estimate for Green Mountain Park is DRY: rideable. Rideable now. Good window for the next ~10 hours. No measurable rain in the past week."}},{"@type":"Question","name":"Is Green Mountain Park muddy right now?","acceptedAnswer":{"@type":"Answer","text":"Loam currently estimates dry conditions (DRY). The drying model accounts for about 55% rock fragments in the soil data. No measurable rain in the past week."}},{"@type":"Question","name":"What is the soil and trail surface like at Green Mountain Park?","acceptedAnswer":{"@type":"Answer","text":"The soil data at the sampled location is classified as rocky sandy. This describes an environmental input, not a survey of every trail surface."}},{"@type":"Question","name":"How long does Green Mountain Park take to dry after rain?","acceptedAnswer":{"@type":"Answer","text":"Green Mountain Park has no fixed drying time. Rainfall, soil moisture, shade and the weather that follows all matter. The model accounts for about 55% rock fragments in the soil data, but that does not establish a recovery time. Check the current estimate and wait until the trail surface is firm."}},{"@type":"Question","name":"Can you ride Green Mountain Park after rain?","acceptedAnswer":{"@type":"Answer","text":"Rock fragments influence the drying model, but softer trail sections may need more time. Wait until the surface is firm. Check the current estimate before heading out, and turn back if your tires leave ruts."}},{"@type":"Question","name":"What does a frozen condition mean at Green Mountain Park?","acceptedAnswer":{"@type":"Answer","text":"FROZEN means Loam estimates snow cover or frozen ground. It does not establish that riding is allowed or that every trail is frozen. Check posted winter access rules and watch for soft ground as temperatures rise."}},{"@type":"Question","name":"What trails are at Green Mountain Park?","acceptedAnswer":{"@type":"Answer","text":"Trails at Green Mountain Park include Green Mountain, Rooney Valley Trail, Summit Loop, North Access and Box O Rox Trail. This is a partial list. The condition estimate covers the whole network, so individual trails may differ."}},{"@type":"Question","name":"What's the terrain and elevation like at Green Mountain Park?","acceptedAnswer":{"@type":"Answer","text":"Terrain data indicates an elevation of about 6,792 ft, an average terrain slope of 7.3° and a predominant SW-facing aspect. Terrain slope does not measure the trail tread or its drainage features."}}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://loamrideconditions.com/"},{"@type":"ListItem","position":2,"name":"Trail Networks","item":"https://loamrideconditions.com/trails"},{"@type":"ListItem","position":3,"name":"Denver & Golden","item":"https://loamrideconditions.com/regions/denver-golden"},{"@type":"ListItem","position":4,"name":"Green Mountain Park","item":"https://loamrideconditions.com/trails/green-mountain-park"}]}</script>
+<style>
+@font-face{font-family:'Barlow Condensed Fallback';src:local('Arial'),local('Helvetica'),local('Liberation Sans'),local('FreeSans');size-adjust:68%;ascent-override:96%;descent-override:24%;line-gap-override:0%}
+@font-face{font-family:'Barlow Condensed';font-style:normal;font-weight:500;font-display:swap;src:url(/fonts/barlow-condensed-v13-500-latin.woff2) format('woff2');unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
+@font-face{font-family:'Barlow Condensed';font-style:normal;font-weight:500;font-display:swap;src:url(/fonts/barlow-condensed-v13-500-latin-ext.woff2) format('woff2');unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF}
+@font-face{font-family:'Barlow Condensed';font-style:normal;font-weight:600;font-display:swap;src:url(/fonts/barlow-condensed-v13-600-latin.woff2) format('woff2');unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
+@font-face{font-family:'Barlow Condensed';font-style:normal;font-weight:600;font-display:swap;src:url(/fonts/barlow-condensed-v13-600-latin-ext.woff2) format('woff2');unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF}
+@font-face{font-family:'Barlow Condensed';font-style:normal;font-weight:700;font-display:swap;src:url(/fonts/barlow-condensed-v13-700-latin.woff2) format('woff2');unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
+@font-face{font-family:'Barlow Condensed';font-style:normal;font-weight:700;font-display:swap;src:url(/fonts/barlow-condensed-v13-700-latin-ext.woff2) format('woff2');unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF}
+@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:400 800;font-display:swap;src:url(/fonts/jetbrains-mono-v24-latin.woff2) format('woff2');unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
+@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:400 800;font-display:swap;src:url(/fonts/jetbrains-mono-v24-latin-ext.woff2) format('woff2');unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF}
+@font-face{font-family:'National Park';font-style:normal;font-weight:200 800;font-display:swap;src:url(/fonts/national-park-v4-latin.woff2) format('woff2');unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
+@font-face{font-family:'National Park';font-style:normal;font-weight:200 800;font-display:swap;src:url(/fonts/national-park-v4-latin-ext.woff2) format('woff2');unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--green:#41d47a;--bg:#191f1a;--bg2:#212821;--text:#f3f6f2;--muted:#8a9887;--faint:#637969;--line:rgba(240,248,236,.09);--line2:rgba(240,248,236,.16);--card-bg:rgba(255,255,255,.035);--card-border:rgba(240,248,236,.09);--rain:#7eb8d4;--caution:#ebaf28;--mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;--cond:'Barlow Condensed','Barlow Condensed Fallback','Arial Narrow',sans-serif;--sans:'National Park',-apple-system,sans-serif}
+html{scroll-behavior:smooth}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:var(--green);text-decoration:none}
+.wrap{max-width:var(--site-max-width);margin:0 auto;padding:0 var(--site-gutter)}
+.station-location{font-size:14px;color:var(--muted)}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.hero{position:relative;overflow:hidden;border-bottom:1px solid var(--line);background:var(--bg2);background-clip:padding-box}
+.hero.has-topo{background-image:var(--topo);background-size:cover;background-position:center}
+/* 2x hero backdrop: sharper contour lines at desktop widths on dense displays.
+   Gated on the manifest actually shipping a hashed @2x asset (never a bare
+   guessed filename), so a network without one is completely unaffected — same
+   selector match count, same bytes, as the 1x-only path. NOT preloaded on
+   purpose: the hero already preloads the 1x file with fetchpriority=high, and
+   most visitors are on phones under the 900px gate anyway, so unconditionally
+   fetching the ~4x-heavier 2x asset would tax LCP for pixels most of them
+   cannot see. */
+@media(min-width:900px) and (-webkit-min-device-pixel-ratio:1.5),(min-width:900px) and (min-resolution:144dpi){
+  .hero.has-topo2x{background-image:var(--topo2x)}
+}
+.hero::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(6,10,7,.72) 0,rgba(25,31,26,.55) 140px,rgba(25,31,26,.8) 55%,var(--bg) 100%);pointer-events:none}
+.hero>.wrap{position:relative;z-index:2;padding-bottom:30px}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 0 0}
+.brand{display:inline-flex;align-items:center;gap:10px;color:var(--text)}
+.brand img{border-radius:7px}
+.brand b{font-size:17px;font-weight:700}
+nav.crumbs{padding:22px 0 0;font:12px var(--mono);color:var(--faint)}
+nav.crumbs a{color:var(--muted)}
+h1{font-family:var(--sans);font-size:clamp(34px,6vw,52px);line-height:1.02;font-weight:700;letter-spacing:-.035em;margin:8px 0 6px;text-wrap:balance}
+.station{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;margin-bottom:22px}
+.station .geo{font:12px var(--mono);color:var(--muted);letter-spacing:.4px}
+.station .sico{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:-2px;margin-right:6px;opacity:.7}
+.vmark-ico{width:11px;height:11px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}.verified-mark{display:inline-flex;align-items:center;gap:4px;padding:3px 9px 3px 7px;border:1px solid var(--line2);border-radius:999px;font:600 11px/1.4 var(--cond);letter-spacing:.05em;text-transform:uppercase;color:var(--muted);text-decoration:none}.verified-mark:hover{border-color:color-mix(in srgb,var(--muted) 60%,var(--line2));color:var(--text)}
+.nb-name .vmark-ico{vertical-align:-2px;margin-left:5px;opacity:.85}
+.closure-alert{background:rgba(239,68,68,.11);border:1px solid rgba(248,113,113,.55);border-radius:14px;padding:20px 22px;margin:0 0 18px}
+.closure-alert h2{color:#e8604a;margin:7px 0 8px;font-size:20px}
+.closure-alert p{margin:0 0 9px}
+.closure-kicker{font:600 13px/1 var(--cond);letter-spacing:2px;text-transform:uppercase;color:#e8604a}
+.closure-meta{display:flex;flex-wrap:wrap;gap:8px 16px;color:var(--muted);font-size:13px}
+.closure-meta a{font-weight:600}
+.verdict{border:1px solid color-mix(in srgb,var(--accent) 30%,var(--line2));border-radius:14px;background:linear-gradient(160deg,color-mix(in srgb,var(--accent) 10%,rgba(26,32,27,.82)),rgba(26,32,27,.9) 60%);box-shadow:0 12px 30px rgba(4,9,6,.3);overflow:hidden}
+.status-word{font:600 clamp(40px,7vw,58px)/0.9 var(--cond);letter-spacing:3px;text-transform:uppercase;color:var(--accent);display:flex;align-items:center;gap:13px}
+/* The halo is its own pseudo-element animating transform + opacity, not a
+   box-shadow on the dot. A box-shadow spread cannot be composited, so the old
+   version repainted the verdict block on every frame of an infinite loop.
+   The halo is a FILLED disc, not a ring. A box-shadow spread is measured from
+   the dot's own border, so the old halo was flush against the dot at every
+   point in the loop. Scaling a ring instead moves its inner edge outward and
+   opens a gap at the peak, which reads as a detached radar ping. A filled disc
+   scaling under the dot keeps the halo flush the way the spread did; the part
+   that overlaps the dot is the accent colour over the accent colour, so the
+   dot itself looks untouched. */
+.verdict-dot{position:relative;width:10px;height:10px;border-radius:50%;background:var(--accent)}
+.verdict-dot::after{content:'';position:absolute;inset:-5px;border-radius:50%;background:color-mix(in srgb,var(--accent) 22%,transparent);animation:vpulse 2.4s ease-in-out infinite}
+@keyframes vpulse{50%{transform:scale(1.3);opacity:.45}}
+@media(prefers-reduced-motion:reduce){.verdict-dot::after{animation:none}}
+.status-label{font-size:16px;font-weight:600;margin-top:9px}
+.verdict-label{font-size:22px;line-height:1.2;font-weight:700;color:var(--accent)}
+.verdict-window{color:var(--muted);font-size:14px;line-height:1.5;margin-top:5px;max-width:44ch}
+.verdict-fallback{padding:26px 26px 24px}
+/* Dry-out email signup (#443/#445): one inline form under the verdict sentence,
+   present only while the trail is not yet PRIME. */
+.dryout-signup{margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+.dryout-form label{display:block;font-size:13px;color:var(--muted);margin-bottom:8px}
+.dryout-row{display:flex;gap:8px;flex-wrap:wrap}
+.dryout-row input{flex:1 1 200px;min-width:0;min-height:40px;border:1px solid var(--line2);border-radius:8px;background:transparent;color:var(--text);font:15px var(--sans);padding:0 12px}
+.dryout-row input::placeholder{color:var(--faint)}
+.dryout-row input:focus-visible{outline:2px solid var(--green);outline-offset:1px}
+.dryout-row button{min-height:40px;border:none;border-radius:8px;padding:0 18px;background:var(--green);color:#0e1c12;font:700 13px var(--sans);cursor:pointer;white-space:nowrap}
+.dryout-row button:hover{filter:brightness(1.06)}
+.dryout-row button:disabled{cursor:wait;opacity:.6}
+.dryout-challenge{width:100%;margin-top:8px}
+.dryout-status{margin:8px 0 0;font-size:12px;color:var(--muted);line-height:1.4}
+.dryout-status.is-error{color:#f1907e}
+/* The tidal chart replaces the gauge, the 10-day strip and the outlook
+   timeline (docs/drafts/tidal-chart-proposal-2026-09-18.md). The verdict
+   card keeps its border and its contents: inside it the status word, the
+   sentence and the three key facts float over the top of the chart, the
+   way the app's verdict floats over the topo, and the chart's top padding
+   is measured (TIDAL_CHART_SCRIPT) from this floating block's own height,
+   so the curve is always drawn under the words. Below 700px (the same
+   breakpoint landing/shared/tidalChart.js's own .tidal.web rule uses to
+   drop to the app's chart density) the block goes static above the chart
+   instead, and the client script clears its inline --plotH so the
+   stylesheet's phone-width rule applies (a08993db on the design branch:
+   an inline custom property always beats a media query). */
+.verdict-chart{position:relative;padding:0 0 10px}
+.verdict-chart .chart{width:100%}
+.verdict-float{position:absolute;top:0;left:0;right:0;z-index:4;display:grid;grid-template-columns:minmax(0,1.5fr) minmax(240px,1fr);gap:16px 32px;align-items:start;padding:26px 26px 0}
+/* A chart key in the same signage face as the dates, not another prose footer.
+   The neutral sample identifies the series without implying a PRIME verdict. */
+.verdict-chart .chart-reading-cue{display:flex;flex-wrap:wrap;align-items:center;gap:6px 20px;margin:0;padding:4px 26px 0;color:var(--muted);font:500 13px/18px var(--cond);letter-spacing:.6px;text-transform:uppercase;pointer-events:none}
+.chart-reading-cue .cue-series,.chart-reading-cue .cue-directions,.chart-reading-cue .cue-direction{display:inline-flex;align-items:center}
+.chart-reading-cue .cue-series{gap:8px;font-weight:600}
+.chart-reading-cue .cue-line{width:24px;flex:none;border-top:2px solid currentColor;border-radius:1px}
+.chart-reading-cue .cue-directions{gap:14px}
+.chart-reading-cue .cue-direction{gap:4px;white-space:nowrap}
+.chart-reading-cue .cue-direction svg{display:block;width:10px;height:12px;flex:none;fill:none;stroke:currentColor;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
+@media(max-width:700px){.verdict-chart .chart-reading-cue{padding-left:20px;padding-right:20px}}
+.keyfacts{display:flex;gap:24px;margin:0;padding-top:8px;flex-wrap:wrap}.kf{min-width:0}.next-change strong{font-weight:600;color:var(--text)}
+.kf{padding:0}
+.kf dt{font:600 11px/1 var(--cond);letter-spacing:1.6px;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.kf dd{margin:0;font:600 14px/1.4 var(--mono);color:var(--text);font-variant-numeric:tabular-nums;white-space:normal}
+.kf dd small{display:block;font-size:11px;color:var(--muted);font-weight:400;margin-top:2px;white-space:normal;max-width:22ch}
+.verdict-alert{padding:0 26px 20px}.verdict-meta{border-top:1px solid var(--line);padding:9px 26px;font:11px/1.5 var(--mono);color:var(--muted)}
+@media(max-width:980px){.verdict-float{grid-template-columns:1fr}.keyfacts{padding-top:2px}}
+@media(max-width:700px){.verdict-float{position:relative;padding:22px 20px 0}.keyfacts{flex-wrap:wrap;gap:12px 24px}}
+.tidal-closed{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;text-align:center;min-height:calc(196px + 94px);padding:24px 20px;border-radius:12px;background:rgba(232,96,74,.06);background-image:repeating-linear-gradient(45deg,rgba(232,96,74,.14) 0 1px,transparent 1px 14px)}
+.tidal-closed .tc-word{font:700 18px/1 var(--cond);letter-spacing:3px;text-transform:uppercase;color:#e8604a}
+.tidal-closed .tc-sub{font:400 12px/1.4 var(--sans);color:var(--muted);max-width:34ch;margin:0}
+@media(max-width:700px){.tidal-closed{min-height:196px}}
+.tidal .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.tidal{position:relative;--ppd:58px;--plotH:196px;--dayH:94px;--rainH:32px;padding-left:14px;user-select:none;-webkit-user-select:none}
+.tidal .rail{position:absolute;pointer-events:none;z-index:4}
+.tidal.motion-active:not(.now-offscreen):not(.inspecting) .now-halo{animation:tidal-now-breathe 4s ease-in-out infinite}
+@keyframes tidal-now-breathe{0%,100%{opacity:.16}50%{opacity:.23}}
+@media (prefers-reduced-motion:reduce){.tidal.motion-active:not(.now-offscreen):not(.inspecting) .now-halo{animation:none}}
+.tidal .track-scroll{overflow-x:auto;overflow-y:hidden;scrollbar-width:none;overscroll-behavior-x:contain;cursor:grab}
+.tidal .track-scroll::-webkit-scrollbar{display:none}
+.tidal .track-scroll.dragging{cursor:grabbing}
+.tidal.static .track-scroll{overflow:hidden;cursor:default}
+.tidal.static .tip{left:62%}
+.tidal.static .tip.end-anchored{left:auto;right:8px;transform:none}
+.tidal .track{position:relative;height:calc(var(--plotH) + var(--dayH));display:flex}
+.tidal .gate{box-sizing:border-box;flex:none;width:236px;margin-top:var(--plot-top,0px);height:calc(var(--plotH) + var(--dayH) - var(--plot-top,0px));display:flex;align-items:center;padding:0 14px 0 6px}
+.tidal .gate.past{justify-content:flex-end;padding:0 6px 0 14px}
+.tidal .gate-card{width:100%;border-radius:14px;padding:16px 16px 14px;background:rgba(255,255,255,.05);border:1px solid rgba(240,248,236,.14);display:flex;flex-direction:column;gap:6px}
+.tidal .gate-card .gk{display:flex;align-items:center;gap:6px;font:700 12px var(--cond);letter-spacing:1.4px;color:var(--green)}
+.tidal .gate-card .gk svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.tidal .app-preview{height:72px;flex-shrink:0;position:relative;overflow:hidden;margin:-2px -2px 6px}.tidal .preview-phone{position:absolute;left:12px;top:5px;width:82px;height:110px;padding:10px 7px;border:2px solid #607765;border-radius:13px;background:#191f1a;transform:rotate(-7deg);font:600 9px var(--sans)}.tidal .preview-phone b{display:block;font:700 13px var(--cond);margin-top:8px}.tidal .preview-phone svg{display:block;width:100%;height:27px;margin-top:7px}.tidal .preview-phone i{display:block;margin-top:8px;font:600 7px var(--sans);background:var(--green);color:var(--bg);padding:3px;text-align:center}.tidal .preview-alert{position:absolute;right:0;top:32px;padding:8px 10px;border:1px solid var(--line);border-radius:9px;background:#292f29;color:var(--text);font:600 12px var(--sans)}.tidal .preview-alert small{font-size:11px;font-weight:400;color:#c1cec3}
+.tidal .gate-card h4{font-weight:700;font-size:17px;letter-spacing:-.2px;line-height:1.15;color:var(--text)}
+.tidal .gate-card p{font-size:13px;line-height:18px;color:#c1cec3}
+.tidal .gate-actions{position:relative;margin-top:6px}
+.tidal .gate-card summary.btn{min-height:44px;padding:0 12px;border-radius:9px;border:1px solid rgba(240,248,236,.18);background:rgba(255,255,255,.04);color:var(--text);display:flex;align-items:center;justify-content:space-between;font:600 14px var(--sans);cursor:pointer;list-style:none}
+.tidal .gate-card summary::-webkit-details-marker{display:none}
+.tidal .gate-actions[open] summary span{transform:rotate(180deg)}
+.tidal .gate-store-options{position:absolute;bottom:calc(100% + 8px);left:0;right:0;z-index:8;padding:4px;background:#141a15;border:1px solid rgba(240,248,236,.18);border-radius:10px}
+.tidal .gate-store-options a{display:flex;align-items:center;min-height:44px;padding:0 10px;border-radius:6px;font:500 14px var(--sans);color:var(--text);text-decoration:none}
+.tidal .gate-store-options a:hover,.tidal .gate-store-options a:focus-visible{background:rgba(255,255,255,.08)}
+.tidal .gate-actions summary:focus-visible,.tidal .gate-store-options a:focus-visible{outline:2px solid var(--text);outline-offset:2px}
+.tidal.light .gate-card{background:rgba(23,32,25,.04);border-color:rgba(23,32,25,.14)}
+.tidal.light .gate-card .gk{color:#167a42}
+.tidal.light .gate-card h4{color:#172019}
+.tidal.light .gate-card p{color:#3f4941}
+.tidal.light .gate-card .btn{background:#167a42;color:#f9faf7}
+.tidal.light .gate-card .btn.ghost{background:transparent;border-color:rgba(23,32,25,.2);color:#172019}
+.tidal.light .gate-card .gate-android{color:#3f4941}
+.tidal .plot{position:relative;flex:none;height:calc(var(--plotH) + var(--dayH))}
+.tidal .plot>svg{position:absolute;inset:0;overflow:visible}
+.tidal .days{position:absolute;left:0;right:0;bottom:0;height:var(--dayH);overflow:hidden}
+.tidal .day{position:absolute;bottom:0;width:var(--ppd);height:100%;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:3px;padding:8px 0 10px;box-sizing:border-box}
+.tidal .day .wx{flex:none;stroke:var(--muted);fill:none}
+.tidal .day .wx.sun{stroke:var(--caution,#ebaf28)}
+.tidal .day .wx.rain{stroke:var(--rain,#7eb8d4)}
+.tidal .day .temp{flex:none;min-height:15px;font:600 13px/15px var(--cond);color:var(--text);font-variant-numeric:tabular-nums;white-space:nowrap}
+.tidal .day .temp.unavailable{color:var(--muted)}
+.tidal .day .amt{font:600 12px var(--cond);letter-spacing:.3px;color:var(--rain,#7eb8d4);min-height:13px;line-height:13px}
+.tidal.web .day .amt{font:600 11px var(--mono);letter-spacing:0}
+.tidal .day .dow{font:600 13px var(--cond);letter-spacing:.7px;color:rgba(243,246,242,.72);margin-top:1px;display:flex;flex-direction:column;align-items:center;line-height:1.05}
+.tidal .day .dow em{font:500 11px var(--cond);font-style:normal;letter-spacing:.4px;color:var(--muted)}
+.tidal .day.today .dow{color:var(--text)}
+.tidal .day.today::before{content:'';position:absolute;inset:4px 3px 8px;border-radius:10px;background:rgba(255,255,255,.06)}
+.tidal .day.dim{opacity:.35}
+.tidal .now-tip{display:none;position:absolute;top:8px;z-index:4;transform:translateX(-50%);flex-direction:column;align-items:center;gap:1px;pointer-events:none;transition:opacity 160ms ease}
+.tidal .now-tip .st{font:700 12px var(--cond);letter-spacing:2px;color:var(--c)}
+.tidal .now-tip .tm{font:600 12px var(--cond);letter-spacing:.3px;color:var(--muted)}
+.tidal.web .now-tip .tm{font:600 11px var(--mono);letter-spacing:0}
+.tidal .tidal-unavailable{min-height:calc(var(--plotH) + var(--dayH));display:flex;align-items:center;justify-content:center;padding:24px;color:var(--muted);font:400 15px/1.5 var(--sans);text-align:center}
+.tidal .stable-caption{position:absolute;left:22px;right:20px;bottom:calc(var(--dayH) + var(--rainH) + 8px);pointer-events:none;font:500 13px/1.4 var(--sans);color:var(--text)}.tidal.inspecting .stable-caption,.tidal.has-visible-gate .stable-caption{visibility:hidden}.tidal .stable-caption small{display:block;margin-top:3px;font-size:12px;color:var(--muted)}
+.tidal .tip{position:absolute;top:6px;z-index:5;transform:translateX(-50%);min-width:104px;max-width:min(280px,calc(100% - 16px));padding:10px 14px 11px;border-radius:14px;background:rgba(20,26,21,.96);border:1px solid rgba(240,248,236,.12);text-align:left;pointer-events:none;opacity:0;transition:opacity 120ms ease}
+.tidal .tip .caret{position:absolute;left:50%;bottom:-6px;width:12px;height:12px;background:rgba(20,26,21,.96);border-right:1px solid rgba(240,248,236,.12);border-bottom:1px solid rgba(240,248,236,.12);transform:translateX(-50%) rotate(45deg)}
+.tidal .tip.below-point .caret{top:-6px;bottom:auto;border-right:0;border-bottom:0;border-left:1px solid rgba(240,248,236,.12);border-top:1px solid rgba(240,248,236,.12)}
+.tidal .tip.on{opacity:1}.tidal .tip.resting{padding:8px 12px}.tidal .tip.resting .fact{display:none}
+.tidal .tip .st{font:700 16px/1 var(--cond);letter-spacing:2px;color:var(--c)}
+.tidal .tip .tm{font:600 12px var(--cond);color:var(--muted);margin-top:4px;letter-spacing:.4px}
+.tidal.web .tip .tm{font:600 11px var(--mono);letter-spacing:.2px}
+.tidal .tip .bd{margin-top:9px;padding-top:8px;border-top:1px solid rgba(240,248,236,.10);display:grid;grid-template-columns:auto 1fr auto;gap:5px 8px;align-items:center;font:500 12.5px/15px var(--cond);color:var(--muted)}
+.tidal .tip .bd i{width:8px;height:8px;border-radius:50%;display:block}
+.tidal .tip .bd b{font:700 12px var(--cond);letter-spacing:1.2px;color:var(--text);text-align:right}
+.tidal .tip .bd.one{display:block;color:rgba(243,246,242,.78)}
+.tidal .tip .fact{margin-top:5px;font:500 12.5px/16px var(--cond);color:rgba(243,246,242,.78)}
+.tidal.light .tip .bd{border-top-color:rgba(23,32,25,.1)}
+.tidal.light .tip .bd,.tidal.light .tip .bd.one{color:#687269}
+.tidal.light .tip .bd b{color:#172019}
+.tidal.light .tip .fact{color:#687269}
+.tidal .scrubline{position:absolute;top:var(--plot-top,0px);height:calc(var(--plotH) - var(--plot-top,0px));width:0;border-left:1px solid rgba(243,246,242,.35);z-index:2;pointer-events:none;opacity:0}
+.tidal .scrubline.on{opacity:1}
+.tidal .fade{position:absolute;top:var(--plot-top,0px);bottom:0;width:44px;z-index:3;pointer-events:none;opacity:0;transition:opacity 180ms ease}
+.tidal .fade.l{left:0;background:linear-gradient(90deg,rgba(20,26,21,.9),transparent)}
+.tidal .fade.r{right:0;background:linear-gradient(90deg,transparent,rgba(20,26,21,.9))}
+.tidal .today-btn{position:absolute;top:10px;right:14px;z-index:6;display:inline-flex;align-items:center;gap:5px;min-height:44px;padding:0 12px 0 9px;border-radius:999px;border:1px solid rgba(240,248,236,.14);background:rgba(20,26,21,.85);color:var(--text);font:600 13px var(--cond);letter-spacing:.4px;cursor:pointer;opacity:0;transform:translateY(-4px);pointer-events:none;transition:opacity 180ms ease,transform 180ms ease}
+.tidal .today-btn svg{transform:rotate(180deg)}
+.tidal .today-btn.left{right:auto;left:14px}
+.tidal .today-btn.left svg{transform:none}
+.tidal .today-btn[hidden]{display:none}
+.tidal .plot:focus-visible{outline:2px solid var(--text);outline-offset:-3px}
+.tidal .today-btn:focus-visible{outline:2px solid var(--text);outline-offset:3px}
+.tidal .today-btn.on{opacity:1;transform:none;pointer-events:auto}
+@media (prefers-reduced-motion:reduce){.tidal .today-btn,.tidal .fade{transition:none}}
+.tidal.light .day .dow em{color:#687269}
+.tidal.light .day .dow{color:#3f4941}
+.tidal.light .day.today .dow{color:#172019}
+.tidal.light .day .temp{color:#172019}
+.tidal.light .day .temp.unavailable{color:#687269}
+.tidal.light .day .amt{color:#2f6f8f}
+.tidal.light .day .wx{stroke:#687269}
+.tidal.light .day .wx.rain{stroke:#2f6f8f}
+.tidal.light .day.today::before{background:rgba(23,32,25,.06)}
+.tidal.light{--ppd:56px;--plotH:150px;--dayH:90px;--rainH:26px}
+.tidal.web{--ppd:84px;--plotH:230px;--dayH:96px;--rainH:44px}
+/* Fade the true data ends, not the viewport or its verdict/header. Gates
+   remain separate, fully opaque, focusable slots outside this mask. */
+.tidal.web .plot{-webkit-mask-image:linear-gradient(90deg,transparent,#000 28px,#000 calc(100% - 28px),transparent);mask-image:linear-gradient(90deg,transparent,#000 28px,#000 calc(100% - 28px),transparent)}
+.tidal.web .day .dow{font-size:13px}
+.tidal.web .tip{max-width:300px}
+@media(max-width:700px){.tidal.web{--ppd:58px;--plotH:224px;--dayH:94px}}
+.subnav{position:sticky;top:0;z-index:10;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.subnav .wrap{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
+.subnav a{flex:none;font:600 15px/1 var(--cond);letter-spacing:1.8px;text-transform:uppercase;color:var(--muted);padding:15px 14px}
+.subnav a:first-child{padding-left:0}
+.subnav a:hover{color:var(--green)}
+/* Edge-fade scroll affordance: [data-edge-fade] is set by the inline script
+   below once it knows which side(s) still have unscrolled content, so a
+   region that already shows everything (desktop, a short window) stays
+   unmasked. Mask, not an opaque overlay, so it reads correctly against any
+   background behind the scroller. */
+[data-edge-fade="left"]{-webkit-mask-image:linear-gradient(90deg,transparent,#000 28px);mask-image:linear-gradient(90deg,transparent,#000 28px)}
+[data-edge-fade="right"]{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 28px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 28px),transparent)}
+[data-edge-fade="both"]{-webkit-mask-image:linear-gradient(90deg,transparent,#000 28px,#000 calc(100% - 28px),transparent);mask-image:linear-gradient(90deg,transparent,#000 28px,#000 calc(100% - 28px),transparent)}
+section{scroll-margin-top:64px}
+main.wrap{padding-bottom:48px}
+.section{padding:30px 0 28px;border-bottom:1px solid var(--line)}
+.section:last-of-type{border-bottom:0}
+.answer-line{padding:26px 0 0;border-bottom:0}
+.answer-line h2{margin:0 0 8px;font-size:19px;letter-spacing:-.01em}
+.answer-copy{font-size:15px;line-height:1.65;color:#c1cec3;max-width:62ch;margin:0}
+.sec-head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin-bottom:18px}
+h2{font-size:22px;font-weight:700;letter-spacing:-.4px}
+p{margin-bottom:12px}
+.outlook-card{background:var(--card-bg);border:1px solid var(--line);border-radius:12px}
+.outlook-card>*+*{border-top:1px solid var(--line)}
+.outlook-card-solo{margin:26px 0 0}
+.tl-caption{display:flex;gap:10px;padding:13px 18px;color:var(--muted);font-size:13.5px;line-height:1.6}
+/* "What already changed": confirmed crossings off the tidal chart's own
+   trajectory (pastChangesHtml in [slug].js), rows with a hairline between
+   them, the same instrument family as the outlook card. JetBrains Mono for
+   the hour, matching the chart's own web-mode data callouts. */
+.section-title{padding:16px 18px 0;font:700 12px var(--cond);letter-spacing:1.6px;text-transform:uppercase;color:var(--muted)}
+.turns{border-top:1px solid var(--line);margin-top:12px}
+.turn{display:grid;grid-template-columns:1fr;gap:5px;padding:14px 18px;border-bottom:1px solid var(--line)}
+.turn:last-child{border-bottom:0}
+.turn .when{font:600 12px var(--mono);letter-spacing:0;color:var(--muted);line-height:1.3}
+.turn .when b{display:block;font-size:14px;color:var(--text);font-weight:600;font-family:var(--sans)}
+.turn .what{font-size:14px;line-height:19px;color:#c1cec3}
+.turn .what b{color:var(--text);font-weight:600}
+.ei{width:13px;height:13px;vertical-align:-2px;margin-right:7px;opacity:.8}
+.conditions-feedback{display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px;padding:12px 18px 13px}
+.feedback-copy{display:flex;align-items:center;gap:9px;min-width:0}
+.feedback-copy h2{margin:0;font-size:14px;font-weight:600;letter-spacing:0;white-space:nowrap}
+.feedback-thanks h2{margin:0 0 5px;font-size:16px}.feedback-thanks p{margin:0;color:var(--muted);font-size:13px;line-height:1.5}
+.feedback-form{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;margin-left:auto;min-width:0}
+.ride-day{display:flex;align-items:center;gap:6px;margin:0;padding:0;border:0}.ride-day label{position:relative;cursor:pointer}.ride-day input{position:absolute;opacity:0;pointer-events:none}.ride-day span{display:block;border:1px solid var(--line2);border-radius:999px;padding:6px 12px;color:var(--muted);font-size:12px;font-weight:600}.ride-day input:checked+span{border-color:rgba(65,212,122,.56);background:rgba(65,212,122,.12);color:var(--green)}.ride-day input:focus-visible+span{outline:2px solid var(--green);outline-offset:2px}
+.feedback-options{display:flex;gap:8px}.feedback-options button{min-height:34px;border:1px solid var(--line2);border-radius:999px;padding:7px 14px;background:transparent;color:var(--text);font:600 12.5px var(--sans);cursor:pointer;white-space:nowrap}.feedback-options button:hover{border-color:rgba(65,212,122,.48);color:var(--green)}.feedback-options button:focus-visible{outline:2px solid var(--green);outline-offset:2px}.feedback-options button:disabled{cursor:wait;opacity:.55}
+.feedback-hp{position:absolute!important;left:-10000px!important;width:1px!important;height:1px!important;overflow:hidden!important}.feedback-status{width:100%;margin:0;color:var(--muted);font-size:12px;line-height:1.4}.feedback-status:empty{display:none}.feedback-status.is-error{color:#f1907e}.feedback-challenge{width:100%;margin-top:4px}.feedback-thanks{width:100%;text-align:center;padding:4px 0}.feedback-cta{margin-top:9px;font-size:12px;font-weight:600}.feedback-cta a{font-weight:600}
+.terrain-grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:28px}
+.terrain-grid .prose p{font-size:14px;line-height:1.65;color:#c1cec3;max-width:62ch;margin:0}
+.accuracy-link{margin:10px 0 0;font-size:13px}
+.spec{border:1px solid var(--line);border-radius:12px;background:var(--card-bg);overflow:hidden;align-self:start}
+.spec h3{font:600 14px/1 var(--cond);letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:13px 18px;border-bottom:1px solid var(--line)}
+.spec .row{display:flex;justify-content:space-between;align-items:baseline;gap:14px;padding:10px 18px;border-bottom:1px solid var(--line)}
+.spec .row:last-child{border-bottom:0}
+.spec dt{font-size:13px;color:var(--muted)}
+.spec dd{font:600 13.5px var(--mono);color:var(--text);text-align:right;font-variant-numeric:tabular-nums}
+.spec dd small{display:block;font:400 11px var(--mono);color:var(--faint)}
+details.more{margin-top:20px;border-top:1px solid var(--line);margin-bottom:-28px}
+details.more summary{list-style:none;cursor:pointer;padding:14px 0;font:600 14px/1 var(--cond);letter-spacing:2px;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;justify-content:space-between;transition:color .12s}
+details.more summary:hover{color:var(--green)}
+details.more summary::-webkit-details-marker{display:none}
+details.more summary::after{content:'+';color:var(--muted);font:400 18px/1 var(--sans)}
+details.more[open] summary::after{content:'\2212'}
+.factor-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--line);border-radius:12px;background:var(--card-bg);overflow:hidden;margin-bottom:22px}
+.factor{padding:17px 19px;border-left:1px solid var(--line)}
+.factor:first-child{border-left:0}
+.factor-ic{width:19px;height:19px;color:var(--green);margin-bottom:9px}
+.factor h4{font:600 14px/1 var(--cond);letter-spacing:2px;text-transform:uppercase;color:var(--text);margin-bottom:7px}
+.factor h4 span{color:var(--muted);margin-left:6px;font-family:var(--mono);font-size:11px;letter-spacing:.5px;text-transform:none;font-weight:400}
+.factor p{font-size:13px;color:#c1cec3;line-height:1.6;margin:0}
+.around-card>*+*{border-top:1px solid var(--line)}
+.around-grid>*+*{border-top:1px solid var(--line)}
+.around-row{padding:18px 0}
+.around-card>.around-row:first-child,.around-card>.around-grid:first-child>.around-row:first-child{padding-top:2px}
+.around-label{display:flex;align-items:center;gap:7px;font:600 12px/1 var(--cond);letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin:0 0 12px}
+.around-note{margin:12px 0 0;color:var(--faint);font-size:12.5px;line-height:1.6;max-width:70ch}
+.around-stewards{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 14px}
+.around-stewards .around-label{margin:0}
+.steward-credit{margin:0;color:var(--muted);font-size:13.5px;line-height:1.6;max-width:70ch}
+.steward-credit a{font-weight:600}
+.cta{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:18px;background:linear-gradient(140deg,rgba(65,212,122,.13),rgba(65,212,122,.03) 55%);border:1px solid rgba(65,212,122,.3);border-radius:14px;padding:22px 26px;margin:26px 0 0;text-align:left}
+.cta h2{color:var(--text);font-size:19px;margin:3px 0 5px}
+.cta p{color:var(--muted);font-size:13px;line-height:1.5;margin:0}
+.cta-copy{min-width:0}
+.store-badges{display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+.store-badges img{height:54px;width:auto;display:block;transition:opacity .15s ease,transform .15s ease}
+.store-badges--compact img{height:44px}
+.store-badges a:hover img{opacity:.85;transform:translateY(-1px)}
+.applinks{display:inline-flex;align-items:center;justify-content:flex-end;flex-wrap:wrap;gap:8px 10px}
+.applink{display:inline-flex;align-items:center;min-height:44px;gap:7px;font-size:13px;font-weight:600;text-decoration:none;color:var(--text,var(--ink,#f3f6f2));border:1px solid var(--line2,var(--strong,rgba(240,248,236,.16)));border-radius:999px;padding:8px 15px 8px 12px;transition:color .12s ease,border-color .12s ease}
+.applink svg{display:block;flex:none;fill:currentColor}
+.applink:hover{color:var(--green,var(--prime,#41d47a));border-color:var(--green,var(--prime,#41d47a));text-decoration:none}
+@media (prefers-reduced-motion:reduce){.store-badges img,.applink{transition:none}.store-badges a:hover img{transform:none}}
+.cta-actions{display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+.trail-names{display:flex;flex-wrap:wrap;gap:8px;list-style:none;padding:0;margin:0}
+.trail-names li{font:600 14px/1.2 var(--cond);letter-spacing:.4px;padding:9px 13px;border:1px solid var(--line2);border-radius:999px;color:var(--text)}
+.nearby-list{display:flex;flex-direction:column}
+.nb{display:flex;align-items:baseline;gap:16px;padding:9px 0;color:var(--text)}
+.nb+.nb{border-top:1px solid var(--line)}
+.nb:hover .nb-name{color:var(--green)}
+.nb-name{font-weight:600;font-size:15px;transition:color .12s}
+.nb-region{font-size:12px;color:var(--faint)}
+.nb-dist{margin-left:auto;font:600 12.5px var(--mono);color:var(--muted);white-space:nowrap}
+.region-link{margin:10px 0 0;font-size:13px;font-weight:600}
+.embed{background:transparent;margin:16px 2px 0;scroll-margin-top:64px}
+.embed>summary{display:block;cursor:pointer;list-style:none;max-width:74ch}.embed>summary::-webkit-details-marker{display:none}
+.embed-aud{color:var(--text);font-weight:600;font-size:13.5px}
+.embed-line{color:var(--muted);font-size:13.5px;line-height:1.6}
+.embed-open{color:var(--green);font-weight:600;font-size:13.5px;white-space:nowrap}
+.embed>summary:hover .embed-open{text-decoration:underline}
+.embed-body{padding:16px 0 6px}
+.embed-lede{color:var(--muted);max-width:58ch;font-size:14px;line-height:1.6}
+.embed-preview{margin:18px 0;max-width:420px}
+.embed-preview iframe{display:block;width:100%;border:0;border-radius:16px;background:var(--bg2)}
+.embed-themes{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:0 0 12px}.embed-themes-label{margin-right:3px;color:var(--muted);font-size:11px;font-weight:600}.embed-theme{min-height:30px;border:1px solid var(--line2);border-radius:999px;padding:0 12px;background:transparent;color:var(--muted);font:600 11px var(--sans);cursor:pointer}.embed-theme:hover{color:var(--text)}.embed-theme[aria-pressed="true"]{border-color:rgba(65,212,122,.5);background:rgba(65,212,122,.1);color:var(--green)}
+.embed-code-wrap{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:9px;align-items:stretch}
+.embed-code{width:100%;height:76px;resize:none;border:1px solid var(--line2);border-radius:10px;padding:11px 12px;background:rgba(0,0,0,.22);color:#b8c6ba;font:11px/1.45 var(--mono)}
+.embed-code:focus{outline:2px solid rgba(65,212,122,.65);outline-offset:1px}
+.embed-copy{align-self:stretch;border:1px solid rgba(65,212,122,.42);border-radius:10px;padding:0 16px;background:rgba(65,212,122,.12);color:var(--green);font:600 13px var(--sans);cursor:pointer}
+.embed-copy:hover{background:rgba(65,212,122,.18)}
+.embed-note{margin:10px 0 0;color:var(--muted);font-size:13px}
+.qa{border-top:1px solid var(--line);padding:0}.qa summary{position:relative;padding:13px 30px 13px 0;cursor:pointer;list-style:none;font-size:15px;font-weight:600}.qa summary::-webkit-details-marker{display:none}.qa summary::after{content:'+';position:absolute;right:4px;color:var(--muted);font-size:18px;font-weight:400}.qa[open] summary::after{content:'\2212'}.qa p{font-size:14px;color:#c1cec3;margin:0;padding:0 28px 15px 0;line-height:1.65}
+.sponsor-wrap{max-width:var(--site-max-width);margin:0 auto;padding:0 var(--site-gutter)}
+.sponsor-slot{margin:44px 0 52px}
+.sponsor-card{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:baseline;gap:8px 20px;padding:17px 20px;border:1px solid rgba(240,248,236,.09);border-radius:12px;background:rgba(255,255,255,.02);color:#8a9887;text-decoration:none;transition:border-color .16s ease}
+.sponsor-card:hover{border-color:rgba(232,227,214,.32);text-decoration:none}
+.sponsor-k{font:600 10px/1 var(--mono,ui-monospace,SFMono-Regular,Menlo,monospace);letter-spacing:1.4px;text-transform:uppercase;color:#637969}
+.sponsor-copy{font-size:13.5px;line-height:1.6}
+.sponsor-copy svg{margin-right:7px;vertical-align:-3px;color:#e8e3d6}
+.sponsor-name{color:#e8e3d6;font-weight:650}
+.sponsor-dest{font:600 11.5px/1 var(--mono,ui-monospace,SFMono-Regular,Menlo,monospace);color:#637969;white-space:nowrap;transition:color .16s ease}
+.sponsor-card:hover .sponsor-dest{color:#e8e3d6}
+@media(max-width:640px){.sponsor-card{grid-template-columns:1fr;gap:10px;padding:16px 18px}}
+.design-v2 main.wrap>.sponsor-slot{order:7}
+
+/* Editorial candidate. All live data, canonical map assets, feedback, SEO, and
+   structured data remain in the production renderer. Only hierarchy changes. */
+.design-v2 .wrap{max-width:var(--site-max-width)}
+.design-v2 .hero{min-height:0;background-color:var(--bg)}
+.design-v2 .hero::after{background:linear-gradient(180deg,rgba(6,10,7,.76) 0,rgba(25,31,26,.88) 38%,var(--bg) 100%)}
+.design-v2 .hero>.wrap{padding-bottom:40px}
+.design-v2 nav.crumbs{padding-top:30px}
+.design-v2 h1{font-family:var(--sans);font-size:clamp(54px,8vw,92px);line-height:.92;letter-spacing:-.045em;margin:36px 0 14px;max-width:14ch}
+.design-v2 .station{margin-bottom:24px}.design-v2 .station-location{font-size:13px}
+body.design-v2 .hero .cta{margin:24px 0 0;padding:24px 38px}
+body.design-v2 .hero .cta h2{margin:0 0 8px}
+.hero .cta .install-context{margin-top:8px;font-size:12px}
+.design-v2 .verdict{max-width:none;background:color-mix(in srgb,var(--bg2) 92%,transparent);box-shadow:0 22px 56px rgba(4,9,6,.34)}
+.design-v2 .verdict-float{padding:28px 32px 0}
+.design-v2 .status-word{font-size:clamp(40px,13.8vw,76px);letter-spacing:3px}.design-v2 .status-label{margin-top:14px}.design-v2 .verdict-label{font-family:var(--sans);font-size:25px}.design-v2 .verdict-window{font-size:15px;line-height:1.62;max-width:52ch}
+.design-v2 .keyfacts{gap:20px 28px}.design-v2 .kf dt{font-size:11px}.design-v2 .kf dd{font-size:15px}.design-v2 .verdict-meta{padding:11px 38px}
+.design-v2 .subnav .wrap{max-width:var(--site-max-width)}.design-v2 main.wrap{display:flex;flex-direction:column;padding-bottom:64px}.design-v2 main.wrap>#conditions{order:1}.design-v2 main.wrap>.outlook-card-solo{order:1}.design-v2 main.wrap>#terrain{order:2}.design-v2 main.wrap>#trails{order:3}.design-v2 main.wrap>#faq{order:4}.design-v2 main.wrap>.cta{order:5}.design-v2 main.wrap>#embed{order:6}.design-v2 main.wrap>footer{order:7}
+.design-v2 .section{padding:56px 0 50px}.design-v2 .sec-head{margin-bottom:24px}.design-v2 h2{font-family:var(--sans);font-size:clamp(28px,4vw,42px);line-height:1.08;letter-spacing:-.03em}.design-v2 .outlook-card{border-radius:14px}.design-v2 .terrain-grid{grid-template-columns:minmax(0,1.35fr) minmax(300px,.65fr);gap:52px}.design-v2 .terrain-grid .prose p{font-size:16px;line-height:1.72;max-width:58ch}.design-v2 .factor-grid{margin-top:30px}.design-v2 .cta{margin:46px 0 6px;padding:28px 30px;background:var(--card-bg);border-color:var(--line2)}.design-v2 .cta h2{font-size:24px;letter-spacing:-.02em}.design-v2 .embed{margin-top:22px}
+.design-v2 .feedback-copy h2{font-size:14px;letter-spacing:0}.design-v2 .feedback-thanks h2{font-size:16px;letter-spacing:0}
+.design-v2 .answer-line{padding:34px 0 0}.design-v2 .answer-line h2{font-size:22px;letter-spacing:-.01em}.design-v2 .answer-copy{font-size:16px;line-height:1.72;max-width:58ch}
+@media(max-width:680px){.design-v2 .hero>.wrap{padding-bottom:34px}.design-v2 h1{font-size:52px;margin-top:46px}.design-v2 .verdict-float{padding:22px 22px 0}.design-v2 .verdict-meta{padding-left:22px;padding-right:22px}.design-v2 .section{padding:42px 0 38px}.design-v2 .terrain-grid{grid-template-columns:1fr;gap:28px}.design-v2 .cta{padding:22px}}
+
+/* Two-column candidate (?design=v3), layered on design-v2. The hero and the
+   verdict card are untouched: the verdict is the page's focal point and stays
+   full width. Below it the templated per-network material (network profile,
+   named trails, nearby networks, stewards, the app card) sits in a second
+   column beside the explanation. Selectors carry body.design-v3 and the
+   section ids because the shared design-v2 fragment (preconnect.js) styles by
+   id, and an id beats a class regardless of source order.
+
+   One spacing system, both columns:
+   - blocks are 56px apart, and both columns start on the same top edge;
+   - a heading is 30px with 20px under it; a sub-label has 12px under it;
+   - a hairline only ever separates rows of a list (profile rows, nearby rows,
+     FAQ rows) or tops the feedback strip under the chart. Never between
+     sections, never under the hero, never above a label. */
+body.design-v3 .hero{border-bottom:0}
+body.design-v3 main.wrap{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:0 56px;align-items:start;padding-top:48px;padding-bottom:64px}
+body.design-v3 main.wrap>.col{grid-column:1;grid-row:1;min-width:0;display:flex;flex-direction:column}
+body.design-v3 main.wrap>.rail{grid-column:2;grid-row:1;min-width:0;display:flex;flex-direction:column}
+body.design-v3 main.wrap>footer{grid-column:1/-1;margin-top:56px}
+body.design-v3 .col>*,body.design-v3 .rail>*{margin:0 0 56px}
+body.design-v3 .col>:last-child,body.design-v3 .rail>:last-child{margin-bottom:0}
+body.design-v3 .col>.section,body.design-v3 .rail>.section,body.design-v3 #conditions,body.design-v3 #terrain,body.design-v3 #faq,body.design-v3 #trails,body.design-v3 #profile{padding:0;border:0}
+body.design-v3 #terrain::before,body.design-v3 #trails::before{display:none}
+body.design-v3 .sec-head,body.design-v3 #conditions>.sec-head,body.design-v3 #terrain .sec-head,body.design-v3 #trails .sec-head,body.design-v3 #faq .sec-head{display:block;margin:0 0 20px}
+body.design-v3 .sec-head h2,body.design-v3 #conditions>.sec-head h2,body.design-v3 #terrain .sec-head h2,body.design-v3 #trails .sec-head h2,body.design-v3 #faq .sec-head h2,body.design-v3 #profile .sec-head h2{font-size:30px;line-height:1.1;letter-spacing:-.025em;max-width:none;margin:0}
+body.design-v3 .around-label,body.design-v3 #trails .around-label,body.design-v3 #trails .around-stewards .around-label{font-size:11px;letter-spacing:2.1px;margin:0 0 12px}
+/* reading column */
+body.design-v3 .col>.answer-line{padding:0}
+body.design-v3 .col>.answer-line h2{font-size:19px;letter-spacing:-.01em;margin:0 0 8px}
+body.design-v3 .answer-lede{margin:0 0 20px}
+body.design-v3 .answer-lede h3{font-size:17px;font-weight:700;letter-spacing:-.01em;margin:0 0 4px}
+body.design-v3 .answer-lede .answer-copy{font-size:15.5px;line-height:1.6;color:#c1cec3;max-width:60ch;margin:0}
+body.design-v3 #conditions>.outlook-card>*+*{border-top:0}
+body.design-v3 #conditions>.outlook-card>.tl-caption{padding:16px 0 0}
+body.design-v3 #conditions>.outlook-card>.conditions-feedback{margin-top:24px;padding:16px 0 0;border-top:1px solid var(--line)}
+body.design-v3 #terrain .terrain-grid{grid-template-columns:1fr;gap:0}
+body.design-v3 #terrain .terrain-grid .prose{padding:0}
+body.design-v3 #terrain .terrain-grid .prose p{font-size:16px;line-height:1.7;max-width:58ch}
+body.design-v3 #terrain .accuracy-link{margin:12px 0 0}
+body.design-v3 #terrain .factors-open{margin-top:32px}
+body.design-v3 #terrain .factor-grid{margin:0;grid-template-columns:1fr 1fr;gap:20px 40px;background:transparent;border:0;border-radius:0}
+@media(max-width:680px){body.design-v3 #terrain .factor-grid{grid-template-columns:1fr;gap:22px}}
+body.design-v3 #terrain .factor{padding:0;border-left:0;min-height:0}
+body.design-v3 #terrain .factor-ic{display:none}
+body.design-v3 #embed{margin:0 0 56px;padding:0;border:0}
+body.design-v3 #embed>summary{grid-template-columns:1fr;gap:8px}
+body.design-v3 #embed .embed-body{grid-template-columns:1fr;gap:24px}
+/* second column */
+body.design-v3 .rail .spec{align-self:stretch;border-radius:14px;background:rgba(8,13,9,.52);border-color:var(--line2)}
+body.design-v3 .rail .spec h3{display:none}
+body.design-v3 .rail .spec .row{padding:12px 18px}
+body.design-v3 #profile .around-trails{margin-top:24px;padding:0}
+body.design-v3 #profile .trail-names{gap:8px}
+body.design-v3 #profile .trail-names li{padding:8px 11px;font-size:12.5px}
+body.design-v3 #profile .around-note,body.design-v3 #trails .around-note{font-size:11.5px;margin:12px 0 0}
+body.design-v3 #trails .around-card>*+*,body.design-v3 #trails .around-grid>*+*{border-top:0}
+body.design-v3 #trails .around-grid{grid-template-columns:1fr;column-gap:0}
+body.design-v3 #trails .around-grid .around-row{padding:0}
+body.design-v3 #trails .nb{padding:10px 0}
+body.design-v3 #trails .nb-name{font-size:13.5px}
+body.design-v3 #trails .region-link{margin:12px 0 0}
+body.design-v3 #trails .around-stewards{display:block;margin-top:24px;padding:0}
+body.design-v3 #trails .around-stewards .steward-credit{font-size:13px}
+body.design-v3 .rail>.cta{display:block;padding:22px;min-height:0;border-radius:14px;background:var(--card-bg);border-color:var(--line)}
+body.design-v3 .rail>.cta h2{font-size:19px;line-height:1.2;letter-spacing:-.01em;margin:0 0 6px}
+body.design-v3 .rail>.cta p{font-size:13.5px}
+body.design-v3 .rail .cta-actions{margin-top:14px}
+@media(max-width:1000px){
+  body.design-v3 main.wrap{display:flex;flex-direction:column;padding-top:32px}
+  body.design-v3 main.wrap>.rail,body.design-v3 main.wrap>.col{display:contents}
+  body.design-v3 .col>*,body.design-v3 .rail>*{min-width:0;max-width:100%}
+  body.design-v3 .col>*,body.design-v3 .rail>*{margin:0 0 48px}
+  /* One order per block, no ties: profile and trails both sat on order:3 and
+     came out right only because flexbox breaks ties by document order. */
+  body.design-v3 #conditions{order:1}
+  body.design-v3 #terrain{order:2}
+  body.design-v3 .rail>#profile{order:3}
+  body.design-v3 .rail>#trails{order:4}
+  body.design-v3 #faq{order:5}
+  body.design-v3 #embed{order:7}
+  body.design-v3 .sponsor-slot{order:8}
+  body.design-v3 main.wrap>footer{order:9;margin-top:48px}
+}
+@media(max-width:680px){
+.hero>.wrap{padding-bottom:22px}
+nav.crumbs{padding-top:18px}
+h1{margin:12px 0 10px}
+body.design-v2 .hero h1{font-size:clamp(34px,9vw,42px);margin-top:18px}
+body.design-v2 .hero .cta{margin-top:20px;padding:22px}
+.station{flex-direction:column;align-items:flex-start;gap:7px;margin-bottom:20px}
+.station-location{font-size:13px}
+.status-label{margin-top:6px}
+.verdict-meta{padding:8px 14px}
+.terrain-grid{grid-template-columns:1fr}
+.factor-grid{grid-template-columns:1fr}
+.factor{border-left:0;border-top:1px solid var(--line)}
+.factor:first-child{border-top:0}
+.conditions-feedback{flex-direction:column;align-items:flex-start;padding:14px 16px}
+.feedback-form{margin-left:0}
+.feedback-options{flex-wrap:wrap}.feedback-options button{min-height:44px}.ride-day{flex-wrap:wrap}
+.cta{grid-template-columns:1fr;padding:18px}
+.around-row{padding:15px 0}
+.embed-code-wrap{grid-template-columns:1fr}.embed-copy{min-height:44px}.embed-preview iframe{height:220px}
+}
+</style>
+</head>
+<body class="design-v2 design-v3">
+<div class="hero has-topo has-topo2x" style="--topo:url('/maps/green-mountain-park.webp?v=1188caa3&cv=1188caa3');--topo2x:url('/maps/green-mountain-park@2x.webp?v=4274e4b1&cv=4274e4b1')">
+  <div class="wrap">
+    <header class="topbar">
+      <a class="brand" href="/"><img src="/icon-56.webp" alt="Loam" width="28" height="28" /><b>Loam</b></a>
+      <span class="applinks"><a class="applink" href="https://apps.apple.com/app/loam-ride-conditions/id6777128177?pt=128999553&amp;ct=loam_web_trail_header&amp;mt=8" target="_blank" rel="noopener" data-cta="trail-header"><svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" focusable="false"><path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/></svg>App Store</a><a class="applink" href="https://play.google.com/store/apps/details?id=com.rasterfactory.loam&amp;referrer=utm_source%3Dloam_web%26utm_campaign%3Dloam_web_trail_header" target="_blank" rel="noopener" data-cta="android-trail-header"><svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" focusable="false"><path d="M22.018 13.298l-3.919 2.218-3.515-3.493 3.543-3.521 3.891 2.202a1.49 1.49 0 0 1 0 2.594zM1.337.924a1.486 1.486 0 0 0-.112.568v21.017c0 .217.045.419.124.6l11.155-11.087L1.337.924zm12.207 10.065l3.258-3.238L3.45.195a1.466 1.466 0 0 0-.946-.179l11.04 10.973zm0 2.067l-11 10.933c.298.036.612-.016.906-.183l13.324-7.54-3.23-3.21z"/></svg>Google Play</a></span>
+    </header>
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span aria-hidden="true">&rsaquo;</span> <a href="/trails">Trail Networks</a> <span aria-hidden="true">&rsaquo;</span> <a href="/regions/denver-golden">Denver &amp; Golden</a> <span aria-hidden="true">&rsaquo;</span> <span aria-current="page">Green Mountain Park</span></nav>
+    <h1>Green Mountain Park</h1>
+    <div class="station">
+      <span class="station-location">Mountain bike trail conditions &middot; Denver &amp; Golden, CO</span>
+      <span class="geo"><svg class="sico" viewBox="0 0 24 24" aria-hidden="true"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>39.700&deg; N &nbsp;105.178&deg; W &nbsp;&nbsp;<svg class="sico" viewBox="0 0 24 24" aria-hidden="true"><path d="m8 3 4 8 5-5 5 15H2L8 3z"/></svg>6,792 FT</span>
+      <a class="verified-mark" href="/how-it-works/#verified" title="Location and terrain checked. This does not verify today's trail condition."><svg class="vmark-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><path d="m9 10 2 2 4-4"/></svg>Verified</a>
+    </div>
+
+    
+
+    
+    <section class="verdict" style="--accent:#a9c25f">
+      <div class="verdict-chart">
+        <div class="verdict-float">
+          <div class="verdict-lead">
+            <h2 class="status-word"><span class="verdict-dot"></span><span>DRY</span><span class="sr-only">: Rideable</span></h2>
+            <p class="status-label" aria-hidden="true">Rideable now</p>
+            <p class="verdict-window next-change"><strong>Tuesday, October 13th at 9pm</strong> Conditions turn Caution.</p>
+          </div>
+          <dl class="keyfacts">
+            <div class="kf"><dt>Recent rain</dt><dd>No measurable rain in the past week</dd></div>
+            <div class="kf"><dt>Today</dt><dd>54&deg;F<small>rain</small></dd></div>
+          </dl>
+        </div>
+        <div class="chart tidal web" data-network-id="green-mountain-park" data-tidal-chart="tidal-green-mountain-park-data" data-now-fact="Good window for the next ~10 hours."><ul class="sr-only tidal-day-summary" aria-label="Day by day weather and trail conditions"><li>Sat 10/3, no measurable rain, daily high 78 degrees Fahrenheit, modeled conditions: DRY</li><li>Sun 10/4, no measurable rain, daily high 74 degrees Fahrenheit, modeled conditions: DRY</li><li>Mon 10/5, no measurable rain, daily high 84 degrees Fahrenheit, modeled conditions: DRY</li><li>Tue 10/6, no measurable rain, daily high 81 degrees Fahrenheit, modeled conditions: DRY</li><li>Wed 10/7, no measurable rain, daily high 75 degrees Fahrenheit, modeled conditions: DRY</li><li>Thu 10/8, no measurable rain, daily high 78 degrees Fahrenheit, modeled conditions: DRY</li><li>Fri 10/9, no measurable rain, daily high 80 degrees Fahrenheit, modeled conditions: DRY</li><li>Sat 10/10, no measurable rain, daily high 76 degrees Fahrenheit, modeled conditions: DRY</li><li>Sun 10/11, no measurable rain, daily high 79 degrees Fahrenheit, modeled conditions: DRY</li><li>Mon 10/12, no measurable rain, daily high 75 degrees Fahrenheit, modeled conditions: DRY</li><li>Today, Tue 10/13, 0.31 inches of rain, daily high 54 degrees Fahrenheit, modeled conditions: DRY then CAUTION</li><li>Wed 10/14, 1.50 inches of rain, daily high 46 degrees Fahrenheit, modeled conditions: CAUTION then STAY OFF</li><li>Thu 10/15, 0.18 inches of rain, daily high 45 degrees Fahrenheit, modeled conditions: STAY OFF then CAUTION</li><li>Fri 10/16, no measurable rain, daily high 57 degrees Fahrenheit, modeled conditions: CAUTION</li><li>Sat 10/17, no measurable rain, daily high 66 degrees Fahrenheit, modeled conditions: CAUTION, forecast preview, beyond the free window</li><li>Sun 10/18, no measurable rain, daily high 62 degrees Fahrenheit, modeled conditions: CAUTION, forecast preview, beyond the free window</li></ul></div>
+        <script type="application/json" id="tidal-green-mountain-park-data">{"version":2,"stepHours":1,"from":"2026-10-03T07:00Z","to":"2026-10-18T18:00Z","dryness":[0.725,0.725,0.725,0.725,0.725,0.725,0.725,0.7285,0.7285,0.7285,0.7354999999999999,0.739,0.746,0.7495,0.753,0.7565,0.76,0.76,0.76,0.76,0.7635,0.76,0.76,0.76,0.76,0.76,0.76,0.76,0.7565,0.7565,0.76,0.7565,0.76,0.76,0.7635,0.767,0.7705,0.774,0.7775,0.7775,0.7809999999999999,0.7809999999999999,0.7809999999999999,0.7809999999999999,0.7809999999999999,0.7809999999999999,0.7809999999999999,0.7809999999999999,0.7809999999999999,0.7809999999999999,0.7809999999999999,0.7809999999999999,0.7809999999999999,0.7809999999999999,0.7809999999999999,0.7809999999999999,0.7845,0.7845,0.788,0.7915,0.7949999999999999,0.7985,0.802,0.8055,0.8055,0.8125,0.8125,0.8125,0.8125,0.8125,0.8125,0.7565,0.7565,0.7565,0.7565,0.7565,0.7565,0.7565,0.7565,0.7565,0.7565,0.7565,0.76,0.767,0.7705,0.774,0.7775,0.7809999999999999,0.7809999999999999,0.7845,0.7845,0.7845,0.7809999999999999,0.7775,0.7775,0.774,0.774,0.7775,0.7775,0.7775,0.7775,0.7845,0.7809999999999999,0.7809999999999999,0.7809999999999999,0.7809999999999999,0.7845,0.788,0.7915,0.7949999999999999,0.7949999999999999,0.7985,0.7985,0.7949999999999999,0.7949999999999999,0.7949999999999999,0.7949999999999999,0.7949999999999999,0.7949999999999999,0.7915,0.7915,0.7915,0.7915,0.7915,0.7915,0.7915,0.7915,0.7915,0.7915,0.7915,0.7949999999999999,0.7985,0.7985,0.802,0.7985,0.7985,0.802,0.8195,0.8195,0.8195,0.8125,0.8125,0.8125,0.8195,0.8195,0.8195,0.8195,0.8195,0.8195,0.8195,0.8195,0.8195,0.8195,0.8195,0.8195,0.823,0.823,0.8265,0.83,0.83,0.83,0.8195,0.823,0.823,0.823,0.823,0.823,0.8195,0.8195,0.8195,0.823,0.823,0.8195,0.8195,0.8195,0.8195,0.8195,0.8195,0.823,0.823,0.8265,0.8265,0.8265,0.823,0.8265,0.83,0.83,0.83,0.83,0.83,0.8265,0.8265,0.8265,0.8265,0.8265,0.8265,0.8265,0.8265,0.8265,0.823,0.8265,0.8265,0.8265,0.8265,0.83,0.8335,0.8335,0.8335,0.837,0.8335,0.8335,0.8335,0.8335,0.8335,0.8335,0.8335,0.83,0.83,0.83,0.83,0.83,0.83,0.83,0.83,0.83,0.83,0.83,0.8335,0.837,0.837,0.837,0.837,0.8405,0.8405,0.8405,0.8405,0.837,0.837,0.837,0.837,0.837,0.8335,0.8335,0.8335,0.8335,0.8335,0.83,0.83,0.83,0.83,0.83,0.83,0.83,0.83,0.8335,0.8335,0.8335,0.8335,0.8335,0.8335,0.753,0.3253496892282874,0.35533200788898683,0.3920274002508658,0.3920274002508658,0.4393359891028545,0.3920274002508658,0.4393359891028545,0.5060137001254329,0.3920274002508658,0.35533200788898683,0.3253496892282874,0.3,0.3253496892282874,0.3,0.18516844929316936,0.11170628377604096,0.10678372145825528,0.08991765303455657,0.08625793525987319,0.08625793525987319,0.08991765303455657,0.0937752873135237,0.0978534746399657,0.08991765303455657,0.0937752873135237,0.0978534746399657,0.10217897193340754,0.10678372145825528,0.11170628377604096,0.11699380266471937,0.12270475813178967,0.12891292016877345,0.13571319227652126,0.14323054433017177,0.15163422895005568,0.16116154079268907,0.1721600151484378,0.18516844929316936,0.20108948596670376,0.22161527216508586,0.2505447429833519,0.271070529181734,0.3253496892282874,0.35533200788898683,0.3920274002508658,0.4393359891028545,0.5060137001254329,0.5533222889774216,0.62,0.62,0.62,0.62,0.62,0.62,0.62,0.62,0.62,0.62,0.62,0.62,0.62,0.62,0.62,0.62,0.62,0.62,0.62,0.62,0.62,0.62,0.62,0.62,0.62,0.62,0.62,0.62,0.62,0.62,0.62,0.62,0.62,0.62,0.62,0.62,0.62,0.62,0.62,0.62,0.62,0.62,0.62,0.62,0.62,0.62,0.62,0.62,0.62,0.62,0.62,0.62,0.62,0.62,0.62,0.6234999999999999,0.6234999999999999,0.6234999999999999,0.6234999999999999,0.6234999999999999,0.627,0.6305000000000001,0.6305000000000001],"status":["DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","STAY OFF","STAY OFF","STAY OFF","STAY OFF","STAY OFF","STAY OFF","STAY OFF","STAY OFF","STAY OFF","STAY OFF","STAY OFF","STAY OFF","STAY OFF","STAY OFF","STAY OFF","STAY OFF","STAY OFF","STAY OFF","STAY OFF","STAY OFF","STAY OFF","STAY OFF","STAY OFF","STAY OFF","STAY OFF","STAY OFF","STAY OFF","STAY OFF","STAY OFF","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION"],"statusRaw":["DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","STAY OFF","STAY OFF","STAY OFF","STAY OFF","STAY OFF","STAY OFF","STAY OFF","STAY OFF","STAY OFF","STAY OFF","STAY OFF","STAY OFF","STAY OFF","STAY OFF","STAY OFF","STAY OFF","STAY OFF","STAY OFF","STAY OFF","STAY OFF","STAY OFF","STAY OFF","STAY OFF","STAY OFF","STAY OFF","STAY OFF","STAY OFF","STAY OFF","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","CAUTION","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY","DRY"],"rainIn":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.015748031496062995,0,0,0.2992125984251969,0,0,0.027559055118110236,0,0.027559055118110236,0.043307086614173235,0,0.07086614173228346,0.05511811023622047,0.015748031496062995,0.027559055118110236,0.015748031496062995,0.015748031496062995,0.14173228346456693,0.3267716535433071,0.0984251968503937,0.3267716535433071,0.08661417322834647,0.05511811023622047,0,0,0,0.08661417322834647,0.027559055118110236,0.027559055118110236,0.027559055118110236,0.015748031496062995,0,0,0.003149606299212599,0.003937007874015749,0.009055118110236222,0.01968503937007874,0.015748031496062995,0.007874015748031498,0.011811023622047246,0.027559055118110236,0.01968503937007874,0.023622047244094488,0.01968503937007874,0.003937007874015749,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"forecastFromIndex":249,"window":"free","band":null,"crossings":[{"at":"2026-10-14T04:00Z","from":"DRY","to":"CAUTION","confidence":"confirmed","clearedAt":"2026-10-14T04:00Z","upperAt":null,"lowerAt":null,"edgesResolved":null},{"at":"2026-10-14T18:00Z","from":"CAUTION","to":"STAY OFF","confidence":"confirmed","clearedAt":"2026-10-14T18:00Z","upperAt":null,"lowerAt":null,"edgesResolved":null},{"at":"2026-10-15T22:00Z","from":"STAY OFF","to":"CAUTION","confidence":"confirmed","clearedAt":"2026-10-15T23:00Z","upperAt":null,"lowerAt":null,"edgesResolved":null},{"at":"2026-10-16T04:00Z","from":"CAUTION","to":"DRY","confidence":"confirmed","clearedAt":"2026-10-20T00:00Z","upperAt":null,"lowerAt":null,"edgesResolved":null}],"nextChange":{"day":"2026-10-13","from":"DRY","to":"CAUTION"},"horizon":null,"daily":{"offsetHours":-7,"time":["2026-10-03","2026-10-04","2026-10-05","2026-10-06","2026-10-07","2026-10-08","2026-10-09","2026-10-10","2026-10-11","2026-10-12","2026-10-13","2026-10-14","2026-10-15","2026-10-16","2026-10-17","2026-10-18"],"precip":[0,0,0,0,0,0,0,0,0,0,0.3,1.5,0.2,0,0,0],"tempMax":[25.4,23.5,28.8,27,23.7,25.7,26.8,24.3,26,24.1,12.2,7.9,7.4,13.8,18.9,16.8],"weatherCode":[2,1,1,2,3,2,1,2,2,0,65,61,85,0,1,3]}}</script>
+        <script>(function(){
+var __name = function (fn) { return fn; };
+var makeConditionRail=function conditionRail(lo, hi, height, frozen) {
+  const zones = [
+    { status: "DUSTY", lo: 0.97, hi: 1 },
+    { status: "DRY", lo: 0.86, hi: 0.97 },
+    { status: "PRIME", lo: 0.62, hi: 0.86 },
+    { status: "CAUTION", lo: 0.3, hi: 0.62 },
+    { status: "STAY OFF", lo: 0, hi: 0.3 }
+  ];
+  const h = Math.max(1, height);
+  const l = Math.max(0, Math.min(0.999, Number.isFinite(lo) ? lo : 0));
+  const u = Math.max(l + 1e-3, Math.min(1, Number.isFinite(hi) ? hi : 1));
+  const above = frozen ? zones : zones.filter((z) => z.lo >= u);
+  const below = frozen ? [] : [...zones.filter((z) => z.hi <= l), { status: "FROZEN" }];
+  const sampleH = Math.min(8, h * 0.3 / Math.max(1, above.length + below.length));
+  const top = above.length * sampleH;
+  const bottom = h - below.length * sampleH;
+  const pieces = above.map((z, i) => ({ status: z.status, top: i * sampleH, bottom: (i + 1) * sampleH }));
+  if (frozen) {
+    pieces.push({ status: "FROZEN", top, bottom });
+  } else {
+    for (const z of zones) {
+      const a = Math.min(z.hi, u), b = Math.max(z.lo, l);
+      if (a > b)
+        pieces.push({
+          status: z.status,
+          top: top + (u - a) / (u - l) * (bottom - top),
+          bottom: top + (u - b) / (u - l) * (bottom - top)
+        });
+    }
+    below.forEach((z, i) => pieces.push({ status: z.status, top: bottom + i * sampleH, bottom: bottom + (i + 1) * sampleH }));
+  }
+  const stops = [];
+  pieces.forEach((p, i) => {
+    const inset = Math.min(5, (p.bottom - p.top) * 0.3);
+    stops.push({ offset: (p.top + (i ? inset : 0)) / h, status: p.status });
+    stops.push({ offset: (p.bottom - (i < pieces.length - 1 ? inset : 0)) / h, status: p.status });
+  });
+  return { top, bottom, stops, folds: [above.length ? top : null, below.length > 1 ? bottom : null].filter((v) => v !== null) };
+};
+var STATUS_META={"PRIME":{"label":"PRIME","sentence":"Rideable now","color":"#41d47a","onLight":"#167a42"},"DRY":{"label":"DRY","sentence":"Rideable","color":"#a9c25f","onLight":"#5e7300"},"DUSTY":{"label":"DUSTY","sentence":"Rideable, very dry","color":"#d6b88a","onLight":"#7d6234"},"CAUTION":{"label":"CAUTION","sentence":"Use judgment","color":"#ebaf28","onLight":"#946000"},"FROZEN":{"label":"FROZEN","sentence":"Snow covered","color":"#7ac8e8","onLight":"#1f718d"},"STAY OFF":{"label":"STAY OFF","sentence":"Active damage risk","color":"#e8604a","onLight":"#b43b2a"}};
+var ZONE_MAX={"STAY OFF":0.3,"CAUTION":0.62,"PRIME":0.97,"DRY":0.97,"DUSTY":1.01,"FROZEN":null};
+var RIDEABLE_AT=0.62,DUST_AT=0.97,STAYOFF_MAX=0.3,NOISE_BAND=0.045;
+var FREE_BACK_DAYS=10,FREE_AHEAD_DAYS=3,FREE_TEASER_HOURS=36,PRO_BACK_DAYS=30,PRO_AHEAD_DAYS=10;
+var HOUR_MS=3600000;
+var POPOVER_TOP_FALLBACK=6,POPOVER_H_BASE=64,POPOVER_H_FACT=85,POPOVER_POINT_GAP=12;
+var DOW=["SUN","MON","TUE","WED","THU","FRI","SAT"];
+var TIDAL_BACK_ICON="<svg viewBox=\"0 0 24 24\" width=\"12\" height=\"12\" aria-hidden=\"true\"><path d=\"m15 18-6-6 6-6\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>";
+var GATE_W=236;
+var GATE_APP_STORE_HREF="https://apps.apple.com/app/loam-ride-conditions/id6777128177?pt=128999553&amp;ct=loam_web_trail_chart&amp;mt=8",GATE_PLAY_STORE_HREF="https://play.google.com/store/apps/details?id=com.rasterfactory.loam&amp;referrer=utm_source%3Dloam_web%26utm_campaign%3Dloam_web_trail_chart";
+var SMOOTH_RADIUS=8,SPLINE_STEP=3,MIN_SPAN=0.16;
+function constantVerdict(statuses, from, to) {
+  if (!Array.isArray(statuses))
+    return null;
+  from = from == null ? 0 : from;
+  to = to == null ? statuses.length - 1 : to;
+  if (to <= from)
+    return null;
+  const status = statuses[from];
+  if (!["PRIME", "DRY", "DUSTY", "CAUTION", "STAY OFF", "FROZEN"].includes(status))
+    return null;
+  for (let i = from; i <= to; i++)
+    if (statuses[i] !== status)
+      return null;
+  return status;
+}
+function resolveWindow(trajectory) {
+  const isPro = !!trajectory && trajectory.window === "pro";
+  return isPro ? { backDays: PRO_BACK_DAYS, aheadDays: PRO_AHEAD_DAYS, teaserHours: 0 } : { backDays: FREE_BACK_DAYS, aheadDays: FREE_AHEAD_DAYS, teaserHours: FREE_TEASER_HOURS };
+}
+function smoothSeries(values, radius) {
+  const r = Number.isFinite(radius) ? radius : 4;
+  const out = new Array(values.length);
+  for (let i = 0; i < values.length; i++) {
+    let sum = 0;
+    let n = 0;
+    for (let k = i - r; k <= i + r; k++) {
+      if (k >= 0 && k < values.length) {
+        sum += values[k];
+        n++;
+      }
+    }
+    out[i] = n ? sum / n : values[i];
+  }
+  return out;
+}
+function fitDomain(series, from, to) {
+  let vmin = Infinity;
+  let vmax = -Infinity;
+  const arrays = Array.isArray(series) ? series : [series];
+  for (const arr of arrays) {
+    if (!Array.isArray(arr) || !arr.length)
+      continue;
+    const lo2 = Math.max(0, Math.floor(from));
+    const hi2 = Math.min(arr.length - 1, Math.ceil(to));
+    for (let i = lo2; i <= hi2; i++) {
+      const v = arr[i];
+      if (!Number.isFinite(v))
+        continue;
+      if (v < vmin)
+        vmin = v;
+      if (v > vmax)
+        vmax = v;
+    }
+  }
+  if (!Number.isFinite(vmin) || !Number.isFinite(vmax))
+    return { lo: 0, hi: 1 };
+  const pad = Math.max(0.02, (vmax - vmin) * 0.25);
+  let lo = vmin - pad;
+  let hi = vmax + pad;
+  if (hi - lo < MIN_SPAN) {
+    const mid = (lo + hi) / 2;
+    lo = mid - MIN_SPAN / 2;
+    hi = mid + MIN_SPAN / 2;
+  }
+  if (hi > 1) {
+    lo -= hi - 1;
+    hi = 1;
+  }
+  if (lo < 0) {
+    hi -= lo;
+    lo = 0;
+  }
+  lo = Math.max(0, lo);
+  hi = Math.min(1, hi);
+  const span = hi - lo;
+  const margin = span * 0.1;
+  if (RIDEABLE_AT >= lo && RIDEABLE_AT <= hi) {
+    const distFromLo = RIDEABLE_AT - lo;
+    const distFromHi = hi - RIDEABLE_AT;
+    if (distFromLo < margin) {
+      lo -= (margin - distFromLo) / 0.9;
+    } else if (distFromHi < margin) {
+      hi += (margin - distFromHi) / 0.9;
+    }
+  } else {
+    const distOutside = RIDEABLE_AT < lo ? lo - RIDEABLE_AT : RIDEABLE_AT - hi;
+    if (distOutside > 0 && distOutside < margin) {
+      const moveIn = distOutside + margin;
+      const moveOut = margin - distOutside;
+      const pullIn = moveIn <= moveOut;
+      if (RIDEABLE_AT < lo) {
+        lo = pullIn ? RIDEABLE_AT - margin : RIDEABLE_AT + margin;
+      } else {
+        hi = pullIn ? RIDEABLE_AT + margin : RIDEABLE_AT - margin;
+      }
+    }
+  }
+  return { lo, hi };
+}
+function makeYFor(padTop, usable, lo, hi) {
+  const l = Number.isFinite(lo) ? lo : 0;
+  const h = Number.isFinite(hi) && hi > l ? hi : l + 1;
+  const span = h - l;
+  return (v) => padTop + (1 - (v - l) / span) * usable;
+}
+function resolveDrawRange(trajectory, opts) {
+  const o = opts || {};
+  const ppd = Number.isFinite(o.ppd) ? o.ppd : 84;
+  const pph = ppd / 24;
+  const win = resolveWindow(trajectory);
+  const freeBackDays = Number.isFinite(o.backDays) ? o.backDays : win.backDays;
+  const freeAheadDays = Number.isFinite(o.aheadDays) ? o.aheadDays : win.aheadDays;
+  const teaserHours = o.teaser ? win.teaserHours : 0;
+  const hasData = !!(trajectory && Array.isArray(trajectory.dryness) && trajectory.dryness.length && trajectory.from);
+  const dryness = hasData ? trajectory.dryness : [];
+  const idxAtDayStart = hasData ? Math.max(0, (win.backDays - freeBackDays) * 24) : 0;
+  const lastFreeIdx = hasData ? Math.min(dryness.length - 1, idxAtDayStart + (freeBackDays + freeAheadDays + 1) * 24 - 1) : 0;
+  const drawFrom = idxAtDayStart;
+  const drawTo = hasData ? Math.min(dryness.length - 1, lastFreeIdx + teaserHours) : 0;
+  return { hasData, drawFrom, drawTo, lastFreeIdx, idxAtDayStart, pph };
+}
+function frameForViewport(trajectory, opts, scrollLeft, viewportPx) {
+  const range2 = resolveDrawRange(trajectory, opts);
+  if (!range2.hasData || range2.drawTo <= range2.drawFrom)
+    return { lo: 0, hi: 1 };
+  const vw = Number.isFinite(viewportPx) && viewportPx > 0 ? viewportPx : 390;
+  const sl = Number.isFinite(scrollLeft) ? scrollLeft : 0;
+  const half = vw / 2;
+  const startIdx = Math.max(range2.drawFrom, range2.drawFrom + Math.floor((sl - half) / range2.pph));
+  const endIdx = Math.min(range2.drawTo, range2.drawFrom + Math.ceil((sl + vw + half) / range2.pph));
+  const dryness = trajectory && trajectory.dryness;
+  if (!Array.isArray(dryness) || !dryness.length)
+    return { lo: 0, hi: 1 };
+  const smoothed = smoothSeries(dryness, SMOOTH_RADIUS);
+  const band = trajectory.band && Array.isArray(trajectory.band.upper) && Array.isArray(trajectory.band.lower) ? trajectory.band : null;
+  const series = band ? [smoothed, smoothSeries(band.upper, SMOOTH_RADIUS), smoothSeries(band.lower, SMOOTH_RADIUS)] : [smoothed];
+  return fitDomain(series, startIdx, endIdx);
+}
+function catmullRomPath(points) {
+  if (!points.length)
+    return "";
+  if (points.length === 1)
+    return `M${points[0][0].toFixed(1)} ${points[0][1].toFixed(1)}`;
+  let d = `M${points[0][0].toFixed(1)} ${points[0][1].toFixed(1)}`;
+  const t = 1 / 6;
+  for (let i = 0; i < points.length - 1; i++) {
+    const p0 = points[i - 1] || points[i];
+    const p1 = points[i];
+    const p2 = points[i + 1];
+    const p3 = points[i + 2] || p2;
+    const c1x = p1[0] + (p2[0] - p0[0]) * t;
+    const c1y = p1[1] + (p2[1] - p0[1]) * t;
+    const c2x = p2[0] - (p3[0] - p1[0]) * t;
+    const c2y = p2[1] - (p3[1] - p1[1]) * t;
+    d += ` C${c1x.toFixed(1)} ${c1y.toFixed(1)},${c2x.toFixed(1)} ${c2y.toFixed(1)},${p2[0].toFixed(1)} ${p2[1].toFixed(1)}`;
+  }
+  return d;
+}
+function sampleForSpline(arr, xFor, yFor, a, b, step) {
+  const st = step || 3;
+  const pts = [];
+  const lo = Math.max(0, a);
+  const hi = Math.min(arr.length - 1, b);
+  for (let i = lo; i < hi; i += st)
+    pts.push([xFor(i), yFor(arr[i])]);
+  pts.push([xFor(hi), yFor(arr[hi])]);
+  return pts;
+}
+function findCrossingPoint(smoothed, idx, fromStatus, toStatus, xFor, yFor) {
+  const fromMax = ZONE_MAX[fromStatus];
+  const toMax = ZONE_MAX[toStatus];
+  if (fromMax != null && toMax != null && fromMax !== toMax) {
+    const thr = Math.min(fromMax, toMax);
+    const dir = toMax > fromMax ? 1 : -1;
+    for (let d = 0; d <= 18; d++) {
+      for (const k of [idx + d, idx - d]) {
+        if (k < 1 || k >= smoothed.length)
+          continue;
+        if (dir * (smoothed[k - 1] - thr) <= 0 && dir * (smoothed[k] - thr) > 0) {
+          return { x: xFor(k), y: yFor(thr) };
+        }
+      }
+    }
+  }
+  const clamped = Math.max(0, Math.min(smoothed.length - 1, idx));
+  return { x: xFor(clamped), y: yFor(smoothed[clamped]) };
+}
+function crossingThreshold(from, to) {
+  const fromMax = ZONE_MAX[from];
+  const toMax = ZONE_MAX[to];
+  if (fromMax == null || toMax == null || fromMax === toMax)
+    return null;
+  return Math.min(fromMax, toMax);
+}
+function thinCrossingLabels(crossings, opts) {
+  const minGapPx = opts && Number.isFinite(opts.minGapPx) ? opts.minGapPx : 84;
+  const HOUR_MS2 = 3600 * 1e3;
+  const labeled = (Array.isArray(crossings) ? crossings : []).filter((c) => c && !c.low && typeof c.at === "string");
+  if (labeled.length <= 1)
+    return labeled.slice();
+  const byThreshold = /* @__PURE__ */ new Map();
+  const noThreshold = [];
+  for (const c of labeled) {
+    const thr = crossingThreshold(c.from, c.to);
+    if (thr == null) {
+      noThreshold.push(c);
+      continue;
+    }
+    if (!byThreshold.has(thr))
+      byThreshold.set(thr, []);
+    byThreshold.get(thr).push(c);
+  }
+  const representatives = noThreshold.slice();
+  for (const list of byThreshold.values()) {
+    const sorted = list.slice().sort((a, b) => Date.parse(a.at) - Date.parse(b.at));
+    for (let i = 0; i < sorted.length; i++) {
+      const a = sorted[i];
+      const b = sorted[i + 1];
+      if (b && a.risingDrier !== b.risingDrier && Math.abs(Date.parse(b.at) - Date.parse(a.at)) <= 18 * HOUR_MS2) {
+        representatives.push(a.future ? a : b);
+        i++;
+      } else {
+        representatives.push(a);
+      }
+    }
+  }
+  const priority = /* @__PURE__ */ __name((c) => crossingThreshold(c.from, c.to) === RIDEABLE_AT ? 0 : 1, "priority");
+  const rank = /* @__PURE__ */ __name((c) => {
+    const t = Date.parse(c.at);
+    return [priority(c), c.future ? 0 : 1, c.future ? t : -t];
+  }, "rank");
+  const ordered = representatives.slice().sort((a, b) => {
+    const ra = rank(a);
+    const rb = rank(b);
+    for (let i = 0; i < ra.length; i++) {
+      if (ra[i] !== rb[i])
+        return ra[i] - rb[i];
+    }
+    return 0;
+  });
+  const kept = [];
+  for (const c of ordered) {
+    if (kept.every((k) => Math.abs(k.x - c.x) >= minGapPx))
+      kept.push(c);
+  }
+  return kept.sort((a, b) => Date.parse(a.at) - Date.parse(b.at));
+}
+function zoneFromDryness(v) {
+  if (v < STAYOFF_MAX)
+    return "STAY OFF";
+  if (v < RIDEABLE_AT)
+    return "CAUTION";
+  if (v < DUST_AT)
+    return "PRIME";
+  return "DUSTY";
+}
+function isFlatRideable(dryness, from, to) {
+  if (!Array.isArray(dryness) || !Number.isFinite(from) || !Number.isFinite(to) || to < from)
+    return false;
+  for (let i = from; i <= to; i++) {
+    const v = dryness[i];
+    if (!Number.isFinite(v) || v < RIDEABLE_AT)
+      return false;
+  }
+  return true;
+}
+function popoverContent(geometry, idx) {
+  const raw = geometry.raw;
+  if (!raw)
+    return null;
+  const clamped = Math.max(geometry.drawFrom, Math.min(geometry.drawTo, idx));
+  const status = raw.status[clamped] || "PRIME";
+  const meta = STATUS_META[status] || STATUS_META.PRIME;
+  const time = new Date(raw.fromMs + clamped * HOUR_MS + (Number.isFinite(raw.offsetMs) ? raw.offsetMs : 0));
+  const forecast = clamped > geometry.nowIdx;
+  let rows4 = null;
+  let single = null;
+  const uniformLabel = /* @__PURE__ */ __name(() => status === "PRIME" ? "Rideable" : meta.sentence, "uniformLabel");
+  const labels = raw.band && raw.band.labels;
+  if (raw.band && labels && labels.upper && labels.lower) {
+    const upperZone = zoneFromDryness(raw.band.upper[clamped]);
+    const lowerZone = zoneFromDryness(raw.band.lower[clamped]);
+    if (upperZone === lowerZone) {
+      single = uniformLabel();
+    } else {
+      rows4 = [
+        { label: labels.upper, zone: upperZone, color: geometry.light ? (STATUS_META[upperZone] || STATUS_META.PRIME).onLight : (STATUS_META[upperZone] || STATUS_META.PRIME).color },
+        { label: labels.lower, zone: lowerZone, color: geometry.light ? (STATUS_META[lowerZone] || STATUS_META.PRIME).onLight : (STATUS_META[lowerZone] || STATUS_META.PRIME).color }
+      ];
+    }
+  } else if (raw.band) {
+    const upperZone = zoneFromDryness(raw.band.upper[clamped]);
+    const lowerZone = zoneFromDryness(raw.band.lower[clamped]);
+    if (upperZone === lowerZone) {
+      single = uniformLabel();
+    } else {
+      single = "Network estimate";
+    }
+  } else {
+    single = "Network estimate";
+  }
+  return {
+    status,
+    time,
+    forecast,
+    rows: rows4,
+    single,
+    color: geometry.light ? meta.onLight : meta.color,
+    label: meta.label
+  };
+}
+function restingPopoverContent(geometry) {
+  if (!geometry.now)
+    return null;
+  const meta = STATUS_META[geometry.now.status] || STATUS_META.PRIME;
+  return {
+    color: geometry.now.color,
+    label: meta.label,
+    fact: ""
+  };
+}
+function clampPopoverLeft(x, tipWidth, containerWidth, margin) {
+  const half = (Number.isFinite(tipWidth) ? tipWidth : 0) / 2;
+  const m = Number.isFinite(margin) ? margin : 8;
+  const lo = half + m;
+  const hi = containerWidth - half - m;
+  if (hi < lo)
+    return containerWidth / 2;
+  return Math.max(lo, Math.min(hi, x));
+}
+function popoverTopFor(pointY, popoverHeight, padTop, gap) {
+  const g = Number.isFinite(gap) ? gap : POPOVER_POINT_GAP;
+  const above = pointY - g - popoverHeight;
+  if (Number.isFinite(padTop) && above >= padTop)
+    return padTop;
+  return pointY + g;
+}
+function computeZoomTransform(padTop, usable, fromLo, fromHi, toLo, toHi) {
+  const spanFrom = fromHi - fromLo;
+  const spanTo = toHi - toLo;
+  if (!(spanFrom > 0) || !(spanTo > 0))
+    return { scaleY: 1, translateY: 0 };
+  const scaleY = spanFrom / spanTo;
+  const yFromAtFromLo = padTop + usable;
+  const yToAtFromLo = padTop + (1 - (fromLo - toLo) / spanTo) * usable;
+  const translateY = yToAtFromLo - scaleY * yFromAtFromLo;
+  return { scaleY, translateY };
+}
+function buildDayCells(trajectory, opts) {
+  const o = opts || {};
+  const { hasData, drawFrom, drawTo, lastFreeIdx, pph } = resolveDrawRange(trajectory, o);
+  const dayCells = [];
+  const dayRiserXs = [];
+  if (!hasData)
+    return { dayCells, dayRiserXs };
+  const fromMs = Date.parse(trajectory.from);
+  const rainIn = Array.isArray(trajectory.rainIn) ? trajectory.rainIn : [];
+  const dryLen = Array.isArray(trajectory.dryness) ? trajectory.dryness.length : 0;
+  const nowIdx = dryLen ? Math.max(0, Math.min(dryLen - 1, Math.round(Number.isFinite(trajectory.forecastFromIndex) ? trajectory.forecastFromIndex : 0) - 1)) : 0;
+  const xFor = /* @__PURE__ */ __name((i) => (i - drawFrom) * pph, "xFor");
+  const daily = trajectory.daily;
+  const offsetMs = (Number.isFinite(daily?.offsetHours) ? daily.offsetHours : 0) * HOUR_MS;
+  const temperatures = /* @__PURE__ */ new Map();
+  if (Array.isArray(daily?.time)) {
+    daily.time.forEach((date, i) => {
+      const value = daily.tempMax?.[i];
+      temperatures.set(date, Number.isFinite(value) ? value : null);
+    });
+  }
+  const nowDate = new Date(fromMs + nowIdx * HOUR_MS + offsetMs);
+  const dayFirst = Math.floor(drawFrom / 24);
+  const dayLast = Math.ceil(drawTo / 24);
+  for (let d = dayFirst; d <= dayLast; d++) {
+    const i0 = d * 24;
+    if (i0 > drawTo)
+      break;
+    if (d !== dayFirst)
+      dayRiserXs.push(xFor(i0));
+    let amt = 0;
+    for (let k = 0; k < 24 && i0 + k <= drawTo && i0 + k < rainIn.length; k++)
+      amt += rainIn[i0 + k] || 0;
+    const cellDate = new Date(fromMs + i0 * HOUR_MS + offsetMs);
+    const isToday = cellDate.getUTCFullYear() === nowDate.getUTCFullYear() && cellDate.getUTCMonth() === nowDate.getUTCMonth() && cellDate.getUTCDate() === nowDate.getUTCDate();
+    dayCells.push({
+      x: xFor(i0),
+      date: cellDate,
+      isToday,
+      dim: i0 > lastFreeIdx,
+      amt,
+      icon: amt >= 0.05 ? "rain" : "sun",
+      tempC: temperatures.get(cellDate.toISOString().slice(0, 10)) ?? null,
+      conditions: (trajectory.status || []).slice(Math.max(i0, drawFrom), Math.min(i0 + 24, drawTo + 1)).filter((status, i, values) => status && (i === 0 || status !== values[i - 1])).join(" then ")
+    });
+  }
+  return { dayCells, dayRiserXs };
+}
+function buildTidalGeometry(trajectory, opts) {
+  const o = opts || {};
+  const mode = o.mode === "embed" ? "embed" : "web";
+  const light = !!o.light;
+  const ppd = Number.isFinite(o.ppd) ? o.ppd : 84;
+  const plotH = Number.isFinite(o.plotH) ? o.plotH : 230;
+  const dayH = Number.isFinite(o.dayH) ? o.dayH : 96;
+  const rainH = Number.isFinite(o.rainH) ? o.rainH : 44;
+  const railTop = Number.isFinite(o.padTop) ? o.padTop : 30;
+  const drawTeaser = !!o.teaser;
+  const range2 = resolveDrawRange(trajectory, { ppd, backDays: o.backDays, aheadDays: o.aheadDays, teaser: drawTeaser });
+  const { hasData, drawFrom, drawTo, idxAtDayStart, lastFreeIdx, pph } = range2;
+  const fromMs = hasData ? Date.parse(trajectory.from) : 0;
+  const offsetMs = (Number.isFinite(trajectory?.daily?.offsetHours) ? trajectory.daily.offsetHours : 0) * HOUR_MS;
+  const dryness = hasData ? trajectory.dryness : [];
+  const status = hasData && Array.isArray(trajectory.status) ? trajectory.status : [];
+  const rainIn = hasData && Array.isArray(trajectory.rainIn) ? trajectory.rainIn : [];
+  const nowIdx = hasData && dryness.length ? Math.max(0, Math.min(dryness.length - 1, Math.round(Number.isFinite(trajectory.forecastFromIndex) ? trajectory.forecastFromIndex : 0) - 1)) : 0;
+  const band = hasData && trajectory.band && Array.isArray(trajectory.band.upper) && Array.isArray(trajectory.band.lower) ? trajectory.band : null;
+  const W = Math.max(0, (drawTo - drawFrom) * pph);
+  const xFor = /* @__PURE__ */ __name((i) => (i - drawFrom) * pph, "xFor");
+  const floor = plotH - 2;
+  const railHeight = Math.max(1, floor - railTop - rainH - 6);
+  const frameLo = Number.isFinite(o.lo) ? o.lo : 0;
+  const frameHi = Number.isFinite(o.hi) && o.hi > frameLo ? o.hi : 1;
+  const rail = makeConditionRail(frameLo, frameHi, railHeight, constantVerdict(status) === "FROZEN");
+  const padTop = railTop + rail.top;
+  const usable = rail.bottom - rail.top;
+  const yFor = makeYFor(padTop, usable, frameLo, frameHi);
+  const geometry = {
+    mode,
+    light,
+    ppd,
+    plotH,
+    dayH,
+    rainH,
+    padTop,
+    floor,
+    W,
+    hasData,
+    drawFrom,
+    drawTo,
+    idxAtDayStart,
+    lastFreeIdx,
+    nowIdx,
+    frameLo,
+    frameHi,
+    usable,
+    railTop,
+    now: null,
+    stableStatus: hasData ? constantVerdict(status, drawFrom, Math.min(drawTo, lastFreeIdx)) : null,
+    rail: null,
+    pastPathD: "",
+    futurePathD: "",
+    bandFillD: "",
+    bandUpperD: "",
+    bandLowerD: "",
+    gradientStops: [],
+    primeWash: null,
+    rideLineY: yFor(RIDEABLE_AT),
+    rainRects: [],
+    crossings: [],
+    dayCells: [],
+    // Day-boundary risers (Ryan, device testing: "we need this to read more
+    // like a graph somehow"): one per local-midnight the window crosses,
+    // reusing the exact same day-bucketing loop as dayCells below so a
+    // riser always lands on the same x as the day row's own boundary. The
+    // first bucket is skipped: its i0 is wherever the drawn window happens
+    // to start, not a real midnight.
+    dayRiserXs: [],
+    teaserRect: drawTeaser && hasData && drawTo > lastFreeIdx ? { x: xFor(lastFreeIdx), width: W - xFor(lastFreeIdx) } : null,
+    // Kept for the scrub popover (popoverContent below), which needs to read
+    // an arbitrary scrubbed hour's status/band split, not just the drawn
+    // paths. fromMs lets it format the scrubbed hour's own clock time.
+    raw: hasData ? { status, band, fromMs, offsetMs } : null,
+    // The page's own one-line deciding fact (windowNote / outlook detail),
+    // threaded straight through for the resting popover (restingPopoverContent
+    // below); never derived here, so the chart never invents a reason.
+    nowFact: typeof o.nowFact === "string" ? o.nowFact : "",
+    // "It's just dry for weeks" (Ryan, 2026-09-18): a flat, crossing-free
+    // rideable stretch otherwise reads as broken rather than boring. See
+    // isFlatRideable and the flatFillD computation below.
+    flatRideable: false,
+    flatFillD: "",
+    flatFillColor: null
+  };
+  if (!hasData || drawTo <= drawFrom)
+    return geometry;
+  const smoothed = smoothSeries(dryness, SMOOTH_RADIUS);
+  const smoothedUpper = band ? smoothSeries(band.upper, SMOOTH_RADIUS) : null;
+  const smoothedLower = band ? smoothSeries(band.lower, SMOOTH_RADIUS) : null;
+  const splineStep = SPLINE_STEP;
+  geometry.raw.smoothed = smoothed;
+  const pastPts = sampleForSpline(smoothed, xFor, yFor, drawFrom, Math.min(nowIdx, drawTo), splineStep);
+  const futPts = sampleForSpline(smoothed, xFor, yFor, Math.max(nowIdx, drawFrom), drawTo, splineStep);
+  geometry.pastPathD = catmullRomPath(pastPts);
+  geometry.futurePathD = catmullRomPath(futPts);
+  if (band) {
+    const upperD = catmullRomPath(sampleForSpline(smoothedUpper, xFor, yFor, drawFrom, drawTo, splineStep));
+    const lowerPts = sampleForSpline(smoothedLower, xFor, yFor, drawFrom, drawTo, splineStep).reverse();
+    const lowerD = catmullRomPath(lowerPts).replace(/^M/, "L");
+    geometry.bandUpperD = upperD;
+    geometry.bandLowerD = catmullRomPath(sampleForSpline(smoothedLower, xFor, yFor, drawFrom, drawTo, splineStep));
+    geometry.bandFillD = `${upperD}${lowerD}Z`;
+  }
+  for (let i = drawFrom; i <= drawTo; i += 3) {
+    const st = status[i] || "PRIME";
+    const meta = STATUS_META[st] || STATUS_META.PRIME;
+    const color = light ? meta.onLight : meta.color;
+    geometry.gradientStops.push({ offset: (i - drawFrom) / (drawTo - drawFrom) * 100, color });
+  }
+  if (!geometry.gradientStops.length) {
+    const st = status[drawFrom] || "PRIME";
+    const meta = STATUS_META[st] || STATUS_META.PRIME;
+    const color = light ? meta.onLight : meta.color;
+    geometry.gradientStops.push({ offset: 0, color }, { offset: 100, color });
+  }
+  const usableBottomY = padTop + usable;
+  const washTop = Math.min(yFor(DUST_AT), usableBottomY);
+  const washBottom = Math.min(yFor(RIDEABLE_AT), usableBottomY);
+  geometry.primeWash = { y: washTop, height: Math.max(0, washBottom - washTop) };
+  geometry.rail = {
+    x: 8,
+    width: 5,
+    top: railTop,
+    bottom: railTop + railHeight,
+    folds: rail.folds.map((y) => railTop + y),
+    stops: rail.stops.map((s) => ({ offset: s.offset * 100, color: light ? STATUS_META[s.status].onLight : STATUS_META[s.status].color }))
+  };
+  const dayFirst = Math.floor(drawFrom / 24);
+  const dayLast = Math.ceil(drawTo / 24);
+  for (let d = dayFirst; d <= dayLast; d++) {
+    const i0 = d * 24;
+    let amt = 0;
+    for (let k = 0; k < 24 && i0 + k <= drawTo && i0 + k < rainIn.length; k++)
+      amt += rainIn[i0 + k] || 0;
+    const mid = i0 + 12;
+    if (amt < 0.05 || mid > drawTo || mid < drawFrom)
+      continue;
+    const h = Math.max(10, Math.min(rainH, amt / 1 * rainH));
+    const forecast = i0 > nowIdx;
+    const barW = mode === "web" ? 12 : 10;
+    geometry.rainRects.push({
+      x: xFor(mid) - barW / 2,
+      y: floor - h,
+      width: barW,
+      height: h,
+      forecast,
+      amt
+    });
+  }
+  const crossings = Array.isArray(trajectory.crossings) ? trajectory.crossings : [];
+  const clampX = /* @__PURE__ */ __name((x) => Math.max(xFor(idxAtDayStart) + 8, Math.min(xFor(lastFreeIdx) - 8, x)), "clampX");
+  for (const c of crossings) {
+    if (!c || typeof c.at !== "string")
+      continue;
+    const idx = Math.round((Date.parse(c.at) - fromMs) / HOUR_MS);
+    if (idx < idxAtDayStart || idx > lastFreeIdx)
+      continue;
+    const low = c.confidence === "low";
+    const point = findCrossingPoint(smoothed, idx, c.from, c.to, xFor, yFor);
+    const x = clampX(point.x);
+    const fromMaxV = ZONE_MAX[c.from];
+    const toMaxV = ZONE_MAX[c.to];
+    const risingDrier = (toMaxV == null ? 0 : toMaxV) > (fromMaxV == null ? 0 : fromMaxV);
+    const toMeta = STATUS_META[c.to] || STATUS_META.PRIME;
+    geometry.crossings.push({
+      idx,
+      x,
+      y: point.y,
+      confidence: c.confidence || "confirmed",
+      low,
+      from: c.from,
+      to: c.to,
+      at: c.at,
+      risingDrier,
+      future: idx > nowIdx,
+      color: light ? toMeta.onLight : toMeta.color
+    });
+  }
+  const dayRow = buildDayCells(trajectory, { ppd, backDays: o.backDays, aheadDays: o.aheadDays, teaser: drawTeaser });
+  geometry.dayCells = dayRow.dayCells;
+  geometry.dayRiserXs = dayRow.dayRiserXs;
+  if (nowIdx >= drawFrom && nowIdx <= drawTo) {
+    const st = status[nowIdx] || "PRIME";
+    const meta = STATUS_META[st] || STATUS_META.PRIME;
+    geometry.now = {
+      x: xFor(nowIdx),
+      y: yFor(smoothed[nowIdx]),
+      status: st,
+      color: light ? meta.onLight : meta.color
+    };
+  }
+  geometry.flatRideable = isFlatRideable(dryness, drawFrom, drawTo);
+  if (geometry.flatRideable) {
+    const topD = catmullRomPath(sampleForSpline(smoothed, xFor, yFor, drawFrom, drawTo, splineStep));
+    const rideY = Math.min(yFor(RIDEABLE_AT), usableBottomY);
+    geometry.flatFillD = `${topD}L${xFor(drawTo).toFixed(1)} ${rideY.toFixed(1)}L${xFor(drawFrom).toFixed(1)} ${rideY.toFixed(1)}Z`;
+    geometry.flatFillColor = geometry.now ? geometry.now.color : light ? STATUS_META.PRIME.onLight : STATUS_META.PRIME.color;
+  }
+  return geometry;
+}
+function formatCrossingClock(iso, offsetMs) {
+  const d = new Date(Date.parse(iso) + (Number.isFinite(offsetMs) ? offsetMs : 0));
+  const h = d.getUTCHours();
+  const ap = h >= 12 ? "p" : "a";
+  const hh = (h + 11) % 12 + 1;
+  const day = DOW[d.getUTCDay()];
+  return `${day.charAt(0)}${day.slice(1).toLowerCase()} ${hh}${ap}`;
+}
+function escapeAttr(value) {
+  return String(value == null ? "" : value).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+}
+function gateCardMarkup(which, geometry) {
+  const past = which === "past";
+  const h4 = past ? "30 days of history" : "The week ahead";
+  const body = past ? "Follow the drying pattern over thirty days with Loam Pro." : "Watch a trail and get notified when it turns rideable. Plan ten days ahead with Pro.";
+  const btnClass = past ? "btn ghost" : "btn";
+  const cta = past ? "trail-chart-past" : "trail-chart-future";
+  const androidCta = past ? "android-trail-chart-past" : "android-trail-chart-future";
+  const preview = geometry && geometry.now ? `<div class="app-preview" aria-hidden="true"><div class="preview-phone"><span>Loam</span><b style="color:${geometry.now.color}">${escapeAttr(geometry.now.status)}</b><svg viewBox="${Math.max(0, geometry.now.x - geometry.ppd * 2)} ${geometry.padTop} ${geometry.ppd * 5} ${geometry.usable}" preserveAspectRatio="none"><path d="${geometry.pastPathD}" fill="none" stroke="${geometry.now.color}" stroke-width="2" vector-effect="non-scaling-stroke"/><path d="${geometry.futurePathD}" fill="none" stroke="${geometry.now.color}" stroke-width="2" stroke-dasharray="2 3" vector-effect="non-scaling-stroke"/></svg><i>Watch this trail</i></div><span class="preview-alert">Trail alerts<br/><small>On your phone</small></span></div>` : "";
+  return `<div class="gate${past ? " past" : ""}"><div class="gate-card">${preview}<h4>${h4}</h4><p>${body}</p><details class="gate-actions"><summary class="${btnClass}">Get the app<span aria-hidden="true">\u2304</span></summary><div class="gate-store-options"><a class="gate-ios" href="${GATE_APP_STORE_HREF}" target="_blank" rel="noopener" data-cta="${cta}">iPhone / iPad</a><a class="gate-android" href="${GATE_PLAY_STORE_HREF}" target="_blank" rel="noopener" data-cta="${androidCta}">Android</a></div></details></div></div>`;
+}
+function tidalWeatherIcon(kind) {
+  const rain = kind === "rain";
+  const d = rain ? '<path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M16 14v6M8 14v6M12 16v6"/>' : '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>';
+  return `<svg class="wx${rain ? " rain" : " sun"}" viewBox="0 0 24 24" width="15" height="15" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
+}
+function tidalTemperatureLabel(tempC) {
+  return Number.isFinite(tempC) ? `${Math.round(tempC * 9 / 5 + 32)}\xB0` : "N/A";
+}
+function tidalDayCellSrText(cell) {
+  const dow = DOW[cell.date.getUTCDay()];
+  const dayName = dow.charAt(0) + dow.slice(1).toLowerCase();
+  const dateLabel = `${dayName} ${cell.date.getUTCMonth() + 1}/${cell.date.getUTCDate()}`;
+  const rain = cell.amt >= 0.05 ? `${cell.amt.toFixed(2)} inches of rain` : "no measurable rain";
+  const parts = [cell.isToday ? `Today, ${dateLabel}` : dateLabel, rain];
+  parts.push(Number.isFinite(cell.tempC) ? `daily high ${Math.round(cell.tempC * 9 / 5 + 32)} degrees Fahrenheit` : "daily high unavailable");
+  if (cell.conditions)
+    parts.push(`modeled conditions: ${cell.conditions}`);
+  if (cell.dim)
+    parts.push("forecast preview, beyond the free window");
+  return parts.join(", ");
+}
+function tidalDaySummaryMarkup(dayCells) {
+  if (!Array.isArray(dayCells) || !dayCells.length)
+    return "";
+  const items = dayCells.map((cell) => `<li>${escapeAttr(tidalDayCellSrText(cell))}</li>`).join("");
+  return `<ul class="sr-only tidal-day-summary" aria-label="Day by day weather and trail conditions">${items}</ul>`;
+}
+function tidalChartMarkup(geometry, opts) {
+  const o = opts || {};
+  const interactive = !!o.interactive;
+  const gradId = o.gradId || "g0";
+  if (!geometry.raw)
+    return '<div class="tidal-unavailable" role="status">Conditions history is unavailable. Try refreshing.</div>';
+  const ring = geometry.light ? "#f9faf7" : "#141a15";
+  const labelFont = geometry.mode === "web" ? "font-family='JetBrains Mono, monospace' font-size='10.5' letter-spacing='0'" : "font-family='Barlow Condensed, Arial Narrow, sans-serif' font-size='11.5' letter-spacing='.3'";
+  const labelFill = geometry.light ? "rgba(23,32,25,.8)" : "rgba(243,246,242,.82)";
+  const stops = geometry.gradientStops.map((s) => `<stop offset="${s.offset.toFixed(2)}%" stop-color="${s.color}"/>`).join("");
+  const washStopColor = geometry.light ? "#167a42" : "#41d47a";
+  const washTopOpacity = geometry.light ? ".03" : ".02";
+  const washBottomOpacity = geometry.light ? ".12" : ".09";
+  const rain = geometry.rainRects.map((r) => {
+    const fill = geometry.light ? r.forecast ? "rgba(47,111,143,.3)" : "rgba(47,111,143,.62)" : r.forecast ? "rgba(126,184,212,.32)" : "rgba(126,184,212,.62)";
+    return `<rect x="${r.x.toFixed(1)}" y="${r.y.toFixed(1)}" width="${r.width}" height="${r.height.toFixed(1)}" rx="${r.width / 2}" fill="${fill}"/>`;
+  }).join("");
+  const risers = (geometry.dayRiserXs || []).map((x) => {
+    const stroke = geometry.light ? "rgba(20,26,21,0.06)" : "rgba(243,246,242,0.06)";
+    return `<line x1="${x.toFixed(1)}" x2="${x.toFixed(1)}" y1="${geometry.padTop.toFixed(1)}" y2="${geometry.floor.toFixed(1)}" stroke="${stroke}" stroke-width="1"/>`;
+  }).join("");
+  const wash = geometry.primeWash ? `<rect x="0" y="${geometry.primeWash.y.toFixed(1)}" width="${geometry.W.toFixed(1)}" height="${geometry.primeWash.height.toFixed(1)}" fill="url(#wash-${gradId})"/>` : "";
+  const rideLine = `<line x1="0" x2="${geometry.W.toFixed(1)}" y1="${geometry.rideLineY.toFixed(1)}" y2="${geometry.rideLineY.toFixed(1)}" stroke="${geometry.light ? "rgba(22,122,66,.55)" : "rgba(65,212,122,.35)"}" stroke-width="1" stroke-dasharray="1 4" stroke-linecap="round" vector-effect="non-scaling-stroke"/>`;
+  const flatFillDef = geometry.flatRideable && geometry.flatFillD ? `<linearGradient id="flatfill-${gradId}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${geometry.flatFillColor}" stop-opacity=".1"/><stop offset="1" stop-color="${geometry.flatFillColor}" stop-opacity="0"/></linearGradient>` : "";
+  const flatFill = geometry.flatRideable && geometry.flatFillD ? `<path d="${geometry.flatFillD}" fill="url(#flatfill-${gradId})"/>` : "";
+  const band = geometry.bandFillD ? `<path d="${geometry.bandFillD}" fill="url(#${gradId})" opacity=".14"/>
+      <path d="${geometry.bandUpperD}" fill="none" stroke="url(#${gradId})" stroke-width="1" opacity=".4" vector-effect="non-scaling-stroke"/>
+      <path d="${geometry.bandLowerD}" fill="none" stroke="url(#${gradId})" stroke-width="1" opacity=".4" vector-effect="non-scaling-stroke"/>` : "";
+  const past = geometry.pastPathD ? `<path d="${geometry.pastPathD}" fill="none" stroke="url(#${gradId})" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>` : "";
+  const future = geometry.futurePathD ? `<path d="${geometry.futurePathD}" fill="none" stroke="url(#${gradId})" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="0.1 5.5" vector-effect="non-scaling-stroke"/>` : "";
+  const nowMark = geometry.now ? `<line x1="${geometry.now.x.toFixed(1)}" x2="${geometry.now.x.toFixed(1)}" y1="${geometry.padTop.toFixed(1)}" y2="${geometry.plotH}" stroke="rgba(243,246,242,.24)" stroke-width="1"/>
+      <circle class="now-halo" cx="${geometry.now.x.toFixed(1)}" cy="${geometry.now.y.toFixed(1)}" r="15" fill="${geometry.now.color}" opacity=".16"/>
+      <circle cx="${geometry.now.x.toFixed(1)}" cy="${geometry.now.y.toFixed(1)}" r="7" fill="${geometry.now.color}" stroke="${ring}" stroke-width="2"/>` : "";
+  const rest = restingPopoverContent(geometry);
+  const popoverHEstimate = rest && rest.fact ? POPOVER_H_FACT : POPOVER_H_BASE;
+  const dotY = geometry.now ? geometry.now.y : null;
+  const desiredPopTop = dotY != null ? dotY - 16 - popoverHEstimate : null;
+  const topLimit = interactive ? geometry.padTop : POPOVER_TOP_FALLBACK;
+  const popoverAnchored = dotY != null && desiredPopTop >= topLimit;
+  const popTop = popoverAnchored ? desiredPopTop : interactive && dotY != null ? dotY + POPOVER_POINT_GAP : POPOVER_TOP_FALLBACK;
+  const hairlineTop = popTop + popoverHEstimate;
+  const hairlineBottom = dotY != null ? dotY - 10 : 0;
+  const showHairline = popoverAnchored && hairlineBottom - hairlineTop > 4;
+  const hairline = showHairline ? `<line x1="${geometry.now.x.toFixed(1)}" x2="${geometry.now.x.toFixed(1)}" y1="${hairlineTop.toFixed(1)}" y2="${hairlineBottom.toFixed(1)}" stroke="${geometry.now.color}" stroke-opacity="0.5" stroke-width="1"/>` : "";
+  const plotTopY = geometry.padTop;
+  const plotBottomY = geometry.padTop + geometry.usable;
+  const inBand = /* @__PURE__ */ __name((c) => c.y >= plotTopY - 0.5 && c.y <= plotBottomY + 0.5, "inBand");
+  const visibleCrossings = geometry.crossings.filter(inBand);
+  const labeledCrossings = thinCrossingLabels(visibleCrossings, { minGapPx: geometry.ppd });
+  const cross = visibleCrossings.map((c) => {
+    const above = c.risingDrier;
+    const ly = above ? c.y - 14 : c.y + 22;
+    const nearEnd = c.x > geometry.W - 34;
+    const anchor = nearEnd ? "end" : "middle";
+    const lx = nearEnd ? c.x + 6 : c.x;
+    const showLabel = !c.low && labeledCrossings.includes(c);
+    const label = showLabel ? `<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" text-anchor="${anchor}" ${labelFont} font-weight="600" fill="${labelFill}">${escapeAttr(formatCrossingClock(c.at, geometry.raw && geometry.raw.offsetMs))}</text>` : "";
+    return `<g>
+      <rect x="${(c.x - 4).toFixed(1)}" y="${(c.y - 4).toFixed(1)}" width="8" height="8" transform="rotate(45 ${c.x.toFixed(1)} ${c.y.toFixed(1)})" fill="${c.low ? ring : c.color}" stroke="${c.low ? c.color : ring}" stroke-width="${c.low ? 1.5 : 2}"/>
+      ${label}
+    </g>`;
+  }).join("");
+  const teaser = geometry.teaserRect ? `<rect class="teaser-wash" x="${geometry.teaserRect.x.toFixed(1)}" y="${geometry.padTop}" width="${geometry.teaserRect.width.toFixed(1)}" height="${geometry.plotH + geometry.dayH - geometry.padTop}" fill="url(#teaser-${gradId})"/>` : "";
+  const days = geometry.dayCells.map((cell) => {
+    const dow = DOW[cell.date.getUTCDay()];
+    const label = cell.isToday ? "TODAY" : dow;
+    const amtLabel = cell.amt >= 0.05 ? `${cell.amt.toFixed(1)}&Prime;` : "";
+    return `<div class="day${cell.isToday ? " today" : ""}${cell.dim ? " dim" : ""}" style="left:${cell.x.toFixed(1)}px">
+      ${tidalWeatherIcon(cell.icon)}
+      <span class="temp${Number.isFinite(cell.tempC) ? "" : " unavailable"}" title="${Number.isFinite(cell.tempC) ? `Daily high: ${tidalTemperatureLabel(cell.tempC)}F` : "Daily high unavailable"}">${tidalTemperatureLabel(cell.tempC)}</span>
+      <span class="amt">${amtLabel}</span>
+      <span class="dow">${label}<em>${cell.date.getUTCDate()}</em></span>
+    </div>`;
+  }).join("");
+  const stableArea = geometry.stableStatus && !geometry.bandFillD && geometry.raw && geometry.raw.smoothed ? `${catmullRomPath(sampleForSpline(geometry.raw.smoothed, (i) => (i - geometry.drawFrom) * geometry.ppd / 24, makeYFor(geometry.padTop, geometry.usable, geometry.frameLo, geometry.frameHi), geometry.drawFrom, geometry.drawTo, SPLINE_STEP))}L${geometry.W},${geometry.floor}L0,${geometry.floor}Z` : "";
+  const stableColor = geometry.stableStatus ? (STATUS_META[geometry.stableStatus] || STATUS_META.PRIME)[geometry.light ? "onLight" : "color"] : "#41d47a";
+  const stableGrid = geometry.stableStatus ? [0.25, 0.5, 0.75].map((f) => `<line x1="0" x2="${geometry.W}" y1="${geometry.padTop + geometry.usable * f}" y2="${geometry.padTop + geometry.usable * f}" stroke="${geometry.light ? "rgba(23,32,25,.07)" : "rgba(243,246,242,.07)"}"/>`).join("") : "";
+  const stableCaption = geometry.stableStatus ? `<div class="stable-caption"><span>${escapeAttr(geometry.stableStatus)} throughout this window</span><small>Modeled conditions over time</small></div>` : "";
+  const svg = `<svg width="${geometry.W.toFixed(1)}" height="${geometry.plotH + geometry.dayH}" viewBox="0 0 ${geometry.W.toFixed(1)} ${geometry.plotH + geometry.dayH}" aria-hidden="true">
+    <defs>
+      <linearGradient id="${gradId}" x1="0" y1="0" x2="${geometry.W.toFixed(1)}" y2="0" gradientUnits="userSpaceOnUse">${stops}</linearGradient>
+      <linearGradient id="wash-${gradId}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${washStopColor}" stop-opacity="${washTopOpacity}"/><stop offset="1" stop-color="${washStopColor}" stop-opacity="${washBottomOpacity}"/></linearGradient>
+      ${flatFillDef}
+      <linearGradient id="teaser-${gradId}" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="${ring}" stop-opacity="0"/><stop offset="1" stop-color="${ring}" stop-opacity=".62"/></linearGradient>
+      <clipPath id="plot-bounds-${gradId}"><rect x="0" y="${geometry.padTop}" width="${geometry.W}" height="${geometry.usable}"/></clipPath>
+      <linearGradient id="stable-${gradId}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${stableColor}" stop-opacity=".16"/><stop offset="1" stop-color="${stableColor}" stop-opacity=".015"/></linearGradient>
+    </defs>
+    ${risers}${stableGrid}
+    <line x1="0" x2="${geometry.W}" y1="${geometry.floor}" y2="${geometry.floor}" stroke="${geometry.light ? "rgba(23,32,25,.18)" : "rgba(243,246,242,.18)"}"/>
+    <g clip-path="url(#plot-bounds-${gradId})"><g class="zoom-group">${stableArea ? `<path d="${stableArea}" fill="url(#stable-${gradId})"/>` : ""}${wash}${rideLine}${flatFill}${band}${past}${future}</g></g>
+    ${rain}
+    ${nowMark}
+    ${hairline}
+    ${cross}
+    ${teaser}
+  </svg>`;
+  const tipLeft = geometry.now ? geometry.now.x : geometry.W / 2;
+  const tipFact = rest && rest.fact ? `<div class="fact">${escapeAttr(rest.fact)}</div>` : "";
+  const caretEl = popoverAnchored ? '<div class="caret"></div>' : "";
+  const staticEndAnchored = !interactive && geometry.W > 0 && tipLeft / geometry.W >= 2 / 3;
+  const tipClass = `tip${rest ? " on resting" : ""}${staticEndAnchored ? " end-anchored" : ""}`;
+  const tipLeftStyle = interactive ? `left:${tipLeft.toFixed(1)}px;` : "";
+  const tip = `<div aria-hidden="true" class="${tipClass}" style="--c:${rest ? rest.color : "#41d47a"};${tipLeftStyle}top:${popTop.toFixed(1)}px"><div class="st">${rest ? escapeAttr(rest.label) : ""}</div><div class="tm">${rest ? "Now" : ""}</div>${tipFact}<div class="bd" style="display:none"></div>${caretEl}</div>`;
+  const railSvg = geometry.rail && geometry.rail.stops.length ? `<svg class="rail" width="${geometry.rail.width}" height="${geometry.plotH}" style="position:absolute;left:${geometry.rail.x}px;top:0" aria-hidden="true"><defs><linearGradient id="railgrad-${gradId}" x1="0" y1="0" x2="0" y2="1">${geometry.rail.stops.map((s) => `<stop offset="${s.offset.toFixed(2)}%" stop-color="${s.color}"/>`).join("")}</linearGradient></defs><rect x="0" y="${geometry.rail.top.toFixed(1)}" width="${geometry.rail.width}" height="${(geometry.rail.bottom - geometry.rail.top).toFixed(1)}" rx="2.5" fill="url(#railgrad-${gradId})" opacity=".55"/>${geometry.rail.folds.map((y) => `<path d="M0 ${y + 1.5}L${geometry.rail.width} ${y - 1.5}" stroke="${ring}" stroke-width="1.5"/>`).join("")}</svg>` : "";
+  const controls = interactive ? `
+    ${railSvg}
+    <div class="now-tip" aria-hidden="true" style="--c:${geometry.now ? geometry.now.color : "#41d47a"}"><span class="st">${geometry.now ? (STATUS_META[geometry.now.status] || {}).label || geometry.now.status : ""}</span><span class="tm">NOW</span></div>
+    ${tip}
+    <div class="scrubline"></div>
+    <div class="fade l"></div>
+    <div class="fade r"></div>
+    <button class="today-btn" type="button" hidden aria-label="Return to today">${TIDAL_BACK_ICON}<span>Today</span></button>` : `${railSvg}${tip}`;
+  const trackStyle = !interactive && geometry.now ? ` style="margin-left:calc(62% - ${geometry.now.x.toFixed(1)}px)"` : "";
+  const gatesOn = geometry.mode === "web";
+  const gatePast = gatesOn ? gateCardMarkup("past", geometry) : "";
+  const gateFuture = gatesOn ? gateCardMarkup("future", geometry) : "";
+  const visual = `<div class="chrome">${controls}</div><div class="track-scroll"><div class="track"${trackStyle}>${gatePast}
+    <div class="plot" ${interactive ? `tabindex="0" role="slider" aria-label="Conditions timeline" aria-valuemin="${geometry.drawFrom}" aria-valuemax="${geometry.drawTo}" aria-valuenow="${geometry.now ? geometry.nowIdx : geometry.drawFrom}" aria-describedby="tidal-help-${gradId}"` : 'aria-hidden="true"'} style="width:${geometry.W.toFixed(1)}px">${svg}<div class="days" aria-hidden="true">${days}</div></div>${gateFuture}
+  </div></div>`;
+  return `${visual}${stableCaption}${interactive ? `<p class="sr-only" id="tidal-help-${gradId}">Modeled soil dryness. Higher is drier. Lower is wetter. Use left and right arrows for hours, Page Up and Page Down for days, and Home for today. Forecasts are modeled estimates.</p>` : ""}${tidalDaySummaryMarkup(geometry.dayCells)}`;
+}
+function readTidalData(container) {
+  const dataId = container.getAttribute("data-tidal-chart");
+  const script = dataId ? document.getElementById(dataId) : null;
+  if (!script)
+    return null;
+  try {
+    return JSON.parse(script.textContent);
+  } catch (_e) {
+    return null;
+  }
+}
+function wireInteractions(container, geometry, trajectory, gradId, signal, restoreState) {
+  const scroller = container.querySelector(".track-scroll");
+  const plot = container.querySelector(".plot");
+  const nowTip = container.querySelector(".now-tip");
+  const tip = container.querySelector(".tip");
+  const scrubline = container.querySelector(".scrubline");
+  const fadeL = container.querySelector(".fade.l");
+  const fadeR = container.querySelector(".fade.r");
+  const todayBtn = container.querySelector(".today-btn");
+  const todayCell = geometry.dayCells.find((cell) => cell.isToday);
+  if (!scroller || !plot)
+    return;
+  const measure = /* @__PURE__ */ __name((action) => {
+    container.measureChart?.("chart_viewed");
+    container.measureChart?.("chart_interacted", { action });
+  }, "measure");
+  const reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const plotScrollLeft = /* @__PURE__ */ __name(() => scroller.scrollLeft - GATE_W, "plotScrollLeft");
+  const homeScroll = /* @__PURE__ */ __name(() => GATE_W + Math.max(0, (geometry.lastFreeIdx - geometry.drawFrom) * geometry.ppd / 24 - scroller.clientWidth), "homeScroll");
+  const dims = { ppd: geometry.ppd, teaser: true };
+  const applyFrame = /* @__PURE__ */ __name((lo, hi) => {
+    const newGeometry = buildTidalGeometry(trajectory, {
+      mode: "web",
+      light: false,
+      teaser: true,
+      ppd: geometry.ppd,
+      plotH: geometry.plotH,
+      dayH: geometry.dayH,
+      rainH: geometry.rainH,
+      padTop: geometry.railTop,
+      nowFact: geometry.nowFact,
+      lo,
+      hi
+    });
+    const temp = document.createElement("div");
+    temp.innerHTML = tidalChartMarkup(newGeometry, { interactive: true, gradId });
+    const newSvg = temp.querySelector(".plot > svg");
+    const oldSvg = container.querySelector(".plot > svg");
+    if (newSvg && oldSvg)
+      oldSvg.replaceWith(newSvg);
+    const newRail = temp.querySelector(".rail");
+    const oldRail = container.querySelector(".rail");
+    if (newRail && oldRail)
+      oldRail.replaceWith(newRail);
+    else if (newRail && !oldRail && nowTip)
+      nowTip.parentNode.insertBefore(newRail, nowTip);
+    else if (!newRail && oldRail)
+      oldRail.remove();
+    geometry = newGeometry;
+    placeNow();
+    if (restingAtNow)
+      showResting();
+    else
+      showSelected();
+  }, "applyFrame");
+  const refit = /* @__PURE__ */ __name(() => {
+    if (!trajectory)
+      return;
+    const target = frameForViewport(trajectory, dims, plotScrollLeft(), scroller.clientWidth || 390);
+    if (Math.abs(target.lo - geometry.frameLo) < 1e-3 && Math.abs(target.hi - geometry.frameHi) < 1e-3)
+      return;
+    applyFrame(target.lo, target.hi);
+  }, "refit");
+  let settleTimer = null;
+  const onSettle = /* @__PURE__ */ __name(() => {
+    clearTimeout(settleTimer);
+    refit();
+  }, "onSettle");
+  if ("onscrollend" in window) {
+    scroller.addEventListener("scrollend", onSettle);
+  } else {
+    scroller.addEventListener("scroll", () => {
+      clearTimeout(settleTimer);
+      settleTimer = setTimeout(onSettle, 120);
+    }, { passive: true });
+  }
+  const placeNow = /* @__PURE__ */ __name(() => {
+    const vw = scroller.clientWidth;
+    container.classList.toggle("has-visible-gate", scroller.scrollLeft < GATE_W - 1 || scroller.scrollLeft + vw > GATE_W + geometry.W + 1);
+    if (geometry.now && nowTip) {
+      const x = GATE_W + geometry.now.x - scroller.scrollLeft;
+      const off = x < 24 || x > vw - 24;
+      container.classList.toggle("now-offscreen", off);
+      nowTip.style.left = x + "px";
+      nowTip.style.opacity = off ? "0" : "1";
+      if (todayBtn) {
+        const todayLeft = todayCell ? GATE_W + todayCell.x - scroller.scrollLeft : x;
+        const dayVisible = todayCell && todayLeft < vw && todayLeft + geometry.ppd > 0;
+        const away = vw > 0 && !dayVisible && (x < 0 || x > vw);
+        todayBtn.hidden = !away;
+        todayBtn.classList.toggle("on", away);
+        todayBtn.classList.toggle("left", x < 24);
+      }
+    }
+    const atStart = scroller.scrollLeft < 30;
+    const atEnd = scroller.scrollLeft + vw > scroller.scrollWidth - 30;
+    if (fadeL)
+      fadeL.style.opacity = atStart ? "0" : "1";
+    if (fadeR)
+      fadeR.style.opacity = atEnd ? "0" : "1";
+  }, "placeNow");
+  const placeTip = /* @__PURE__ */ __name((x) => {
+    if (!tip)
+      return;
+    const w = tip.offsetWidth || 158;
+    const vw = scroller.clientWidth || container.clientWidth || 390;
+    const left = Math.max(0, GATE_W - scroller.scrollLeft);
+    const right = Math.min(vw, GATE_W + geometry.W - scroller.scrollLeft);
+    tip.style.visibility = right - left < w + 16 ? "hidden" : "";
+    const clamped = left + clampPopoverLeft(x - left, w, Math.max(0, right - left), 8);
+    tip.style.left = clamped.toFixed(1) + "px";
+  }, "placeTip");
+  const placeCaret = /* @__PURE__ */ __name(() => {
+    if (!tip || !geometry.now)
+      return;
+    let caretEl = tip.querySelector(".caret");
+    if (!caretEl) {
+      caretEl = document.createElement("div");
+      caretEl.className = "caret";
+      tip.appendChild(caretEl);
+    }
+    const w = tip.offsetWidth || 158;
+    const tipCenterX = parseFloat(tip.style.left) || 0;
+    const pointX = restingAtNow ? geometry.now.x : (selectedIdx - geometry.drawFrom) * geometry.ppd / 24;
+    const pointY = restingAtNow ? geometry.now.y : makeYFor(geometry.padTop, geometry.usable, geometry.frameLo, geometry.frameHi)(geometry.raw.smoothed[selectedIdx]);
+    const dotScreenX = plot.getBoundingClientRect().left - container.getBoundingClientRect().left + pointX;
+    const caretLeft = Math.max(12, Math.min(w - 12, dotScreenX - (tipCenterX - w / 2)));
+    caretEl.style.left = caretLeft.toFixed(1) + "px";
+    const top = parseFloat(tip.style.top);
+    const below = top > pointY;
+    tip.classList.toggle("below-point", below);
+    caretEl.hidden = !below && top + (tip.offsetHeight || POPOVER_H_BASE) > pointY;
+  }, "placeCaret");
+  const refineTipTop = /* @__PURE__ */ __name(() => {
+    if (!tip || !geometry.now)
+      return;
+    const h = tip.offsetHeight;
+    if (!h)
+      return;
+    const desired = geometry.now.y - 16 - h;
+    const anchored = desired >= geometry.padTop;
+    tip.style.top = (anchored ? desired : geometry.now.y + POPOVER_POINT_GAP).toFixed(1) + "px";
+    placeCaret();
+  }, "refineTipTop");
+  let restingAtNow = restoreState ? !!restoreState.restingAtNow : true;
+  let selectedIdx = restoreState && Number.isFinite(restoreState.selectedIdx) ? restoreState.selectedIdx : geometry.now ? geometry.nowIdx : geometry.drawFrom;
+  container._tidalSnapshot = () => ({ scrollLeft: scroller.scrollLeft, restingAtNow, selectedIdx });
+  const showResting = /* @__PURE__ */ __name(() => {
+    if (!tip)
+      return;
+    const rest = restingPopoverContent(geometry);
+    container.classList.remove("inspecting");
+    if (!rest) {
+      tip.classList.remove("on", "resting");
+      return;
+    }
+    tip.style.setProperty("--c", rest.color);
+    const stEl = tip.querySelector(".st");
+    const tmEl = tip.querySelector(".tm");
+    const factEl = tip.querySelector(".fact");
+    const bdEl = tip.querySelector(".bd");
+    if (stEl)
+      stEl.textContent = rest.label;
+    if (tmEl)
+      tmEl.textContent = "Now";
+    plot.setAttribute("aria-valuenow", String(selectedIdx));
+    plot.setAttribute("aria-valuetext", `${rest.label}, now, modeled conditions`);
+    if (factEl)
+      factEl.style.display = rest.fact ? "" : "none";
+    if (bdEl)
+      bdEl.style.display = "none";
+    placeTip(geometry.now ? GATE_W + geometry.now.x - scroller.scrollLeft : container.clientWidth / 2);
+    refineTipTop();
+    placeCaret();
+    tip.classList.add("on", "resting");
+    if (scrubline)
+      scrubline.classList.remove("on");
+  }, "showResting");
+  let wheelPanOrigin = null;
+  let touchPanOrigin = null;
+  const resetToNow = /* @__PURE__ */ __name(() => {
+    wheelPanOrigin = null;
+    touchPanOrigin = null;
+    restingAtNow = true;
+    selectedIdx = geometry.now ? geometry.nowIdx : geometry.drawFrom;
+    showResting();
+    placeNow();
+  }, "resetToNow");
+  if (todayBtn) {
+    todayBtn.addEventListener("click", () => {
+      measure("return_to_now");
+      resetToNow();
+      scroller.scrollTo({ left: homeScroll(), behavior: reduceMotion ? "auto" : "smooth" });
+      plot.focus({ preventScroll: true });
+    });
+  }
+  scroller.addEventListener("scroll", () => {
+    if (touchPanOrigin !== null && Math.abs(scroller.scrollLeft - touchPanOrigin) > 6)
+      measure("pan");
+    if (wheelPanOrigin !== null && Math.abs(scroller.scrollLeft - wheelPanOrigin) > 6) {
+      measure("pan");
+      wheelPanOrigin = null;
+    }
+    placeNow();
+    if (restingAtNow && Math.abs(scroller.scrollLeft - homeScroll()) < 2)
+      showResting();
+    else if (!restingAtNow) {
+      showSelected();
+      return;
+    } else if (tip)
+      tip.classList.remove("on");
+    if (scrubline)
+      scrubline.classList.remove("on");
+  }, { passive: true });
+  let drag = null;
+  let dragged = false;
+  scroller.addEventListener("pointerdown", (e) => {
+    if (e.pointerType !== "mouse" || !plot.contains(e.target))
+      return;
+    drag = { x: e.clientX, sl: scroller.scrollLeft };
+    dragged = false;
+    scroller.classList.add("dragging");
+  });
+  const listenerOpts = signal ? { signal } : false;
+  window.addEventListener("pointermove", (e) => {
+    if (!drag)
+      return;
+    if (Math.abs(e.clientX - drag.x) > 3)
+      dragged = true;
+    scroller.scrollLeft = drag.sl - (e.clientX - drag.x);
+    if (Math.abs(scroller.scrollLeft - drag.sl) > 6)
+      measure("pan");
+  }, listenerOpts);
+  window.addEventListener("pointerup", () => {
+    drag = null;
+    scroller.classList.remove("dragging");
+  }, listenerOpts);
+  let holdTimer = null;
+  let scrubbing = false;
+  const DOW_LABEL = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  let lastShownIdx = null;
+  const showAt = /* @__PURE__ */ __name((clientX) => {
+    if (!tip || !scrubline)
+      return;
+    const rect = plot.getBoundingClientRect();
+    const px = clientX - rect.left;
+    const pph = geometry.ppd / 24;
+    const idx = Math.max(geometry.drawFrom, Math.min(geometry.drawTo, Math.round(geometry.drawFrom + px / pph)));
+    selectedIdx = idx;
+    if (idx !== lastShownIdx) {
+      lastShownIdx = idx;
+      const info = popoverContent(geometry, idx);
+      if (info) {
+        tip.style.setProperty("--c", info.color);
+        const stEl = tip.querySelector(".st");
+        const tmEl = tip.querySelector(".tm");
+        const factEl = tip.querySelector(".fact");
+        const bdEl = tip.querySelector(".bd");
+        if (stEl)
+          stEl.textContent = info.label;
+        if (tmEl) {
+          const h = info.time.getUTCHours();
+          const ap = h >= 12 ? "pm" : "am";
+          const hh = (h + 11) % 12 + 1;
+          tmEl.textContent = `${DOW_LABEL[info.time.getUTCDay()]} ${info.time.getUTCDate()} \xB7 ${hh}${ap}${info.forecast ? " \xB7 forecast" : ""}`;
+        }
+        if (factEl)
+          factEl.style.display = "none";
+        if (bdEl) {
+          if (info.rows) {
+            bdEl.classList.remove("one");
+            bdEl.innerHTML = info.rows.map((r) => `<i style="background:${escapeAttr(r.color)}"></i><span>${escapeAttr(r.label)}</span><b style="color:${escapeAttr(r.color)}">${escapeAttr(r.zone)}</b>`).join("");
+            bdEl.style.display = "";
+          } else if (info.single) {
+            bdEl.classList.add("one");
+            bdEl.textContent = info.single;
+            bdEl.style.display = "";
+          } else {
+            bdEl.style.display = "none";
+          }
+        }
+      }
+      plot.setAttribute("aria-valuenow", String(idx));
+      const reading = tip.querySelector(".tm");
+      plot.setAttribute("aria-valuetext", `${info ? info.label : "Unavailable"}, ${reading ? reading.textContent : ""}${info && info.rows ? ", " + info.rows.map((r) => [r.label, r.zone].join(": ")).join(", ") : ", network estimate"}`);
+    }
+    restingAtNow = false;
+    container.classList.add("inspecting");
+    placeNow();
+    tip.classList.remove("resting");
+    positionInspection(idx, clientX);
+    return idx;
+  }, "showAt");
+  let scrubRafId = null;
+  let pendingClientX = null;
+  const scheduleShowAt = /* @__PURE__ */ __name((clientX) => {
+    pendingClientX = clientX;
+    if (scrubRafId != null)
+      return;
+    scrubRafId = requestAnimationFrame(() => {
+      scrubRafId = null;
+      if (pendingClientX != null)
+        showAt(pendingClientX);
+    });
+  }, "scheduleShowAt");
+  const positionInspection = /* @__PURE__ */ __name((idx, clientX) => {
+    if (!tip || !scrubline)
+      return;
+    if (geometry.raw && geometry.raw.smoothed) {
+      const yForScrub = makeYFor(geometry.padTop, geometry.usable, geometry.frameLo, geometry.frameHi);
+      const pointY = yForScrub(geometry.raw.smoothed[idx]);
+      const h = tip.offsetHeight || POPOVER_H_BASE;
+      tip.style.top = Math.max(geometry.padTop, Math.min(geometry.plotH - h - 8, popoverTopFor(pointY, h, geometry.padTop, POPOVER_POINT_GAP))).toFixed(1) + "px";
+    }
+    const containerRect = container.getBoundingClientRect();
+    placeTip(clientX - containerRect.left);
+    placeCaret();
+    scrubline.style.left = (clientX - containerRect.left).toFixed(1) + "px";
+    tip.classList.add("on");
+    scrubline.classList.add("on");
+    if (nowTip)
+      nowTip.style.opacity = "0";
+  }, "positionInspection");
+  const showSelected = /* @__PURE__ */ __name(() => {
+    const x = (selectedIdx - geometry.drawFrom) * geometry.ppd / 24;
+    const screenX = GATE_W + x - scroller.scrollLeft;
+    if (screenX >= 0 && screenX <= scroller.clientWidth) {
+      positionInspection(selectedIdx, plot.getBoundingClientRect().left + x);
+    } else {
+      if (tip)
+        tip.classList.remove("on");
+      if (scrubline)
+        scrubline.classList.remove("on");
+    }
+  }, "showSelected");
+  if (restoreState && !restoreState.restingAtNow) {
+    scroller.scrollLeft = Number.isFinite(restoreState.scrollLeft) ? restoreState.scrollLeft : homeScroll();
+    placeNow();
+    showSelected();
+    refineTipTop();
+    requestAnimationFrame(() => {
+      placeNow();
+      showSelected();
+      refineTipTop();
+      refit();
+    });
+  } else {
+    scroller.scrollLeft = homeScroll();
+    placeNow();
+    showResting();
+    refineTipTop();
+    requestAnimationFrame(() => {
+      scroller.scrollLeft = homeScroll();
+      placeNow();
+      showResting();
+      refineTipTop();
+      refit();
+    });
+  }
+  scroller.addEventListener("pointermove", (e) => {
+    if (!plot.contains(e.target)) {
+      if (tip)
+        tip.classList.remove("on");
+      if (scrubline)
+        scrubline.classList.remove("on");
+      return;
+    }
+    if (e.pointerType === "mouse" && !drag) {
+      measure("inspect");
+      scheduleShowAt(e.clientX);
+    } else if (scrubbing) {
+      measure("inspect");
+      e.preventDefault();
+      scheduleShowAt(e.clientX);
+    }
+  });
+  let touchOrigin = null;
+  const preventScrubScroll = /* @__PURE__ */ __name((e) => {
+    e.preventDefault();
+  }, "preventScrubScroll");
+  const startScrubTouchGuard = /* @__PURE__ */ __name(() => scroller.addEventListener("touchmove", preventScrubScroll, { passive: false }), "startScrubTouchGuard");
+  const stopScrubTouchGuard = /* @__PURE__ */ __name(() => scroller.removeEventListener("touchmove", preventScrubScroll), "stopScrubTouchGuard");
+  scroller.addEventListener("pointerdown", (e) => {
+    if (e.pointerType === "mouse" || !plot.contains(e.target))
+      return;
+    touchOrigin = { x: e.clientX, y: e.clientY, sl: scroller.scrollLeft, moved: false };
+    holdTimer = setTimeout(() => {
+      scrubbing = true;
+      startScrubTouchGuard();
+      measure("inspect");
+      showAt(e.clientX);
+    }, 260);
+  });
+  scroller.addEventListener("pointermove", (e) => {
+    if (!touchOrigin || scrubbing)
+      return;
+    if (Math.hypot(e.clientX - touchOrigin.x, e.clientY - touchOrigin.y) > 6) {
+      touchOrigin.moved = true;
+      clearTimeout(holdTimer);
+    }
+  });
+  scroller.addEventListener("pointerup", (e) => {
+    clearTimeout(holdTimer);
+    if (touchOrigin && Math.abs(scroller.scrollLeft - touchOrigin.sl) > 6)
+      measure("pan");
+    if (touchOrigin && !touchOrigin.moved) {
+      measure("inspect");
+      showAt(e.clientX);
+    }
+    touchOrigin = null;
+    if (scrubbing)
+      stopScrubTouchGuard();
+    scrubbing = false;
+  });
+  scroller.addEventListener("pointercancel", () => {
+    clearTimeout(holdTimer);
+    touchOrigin = null;
+    if (scrubbing)
+      stopScrubTouchGuard();
+    scrubbing = false;
+  });
+  scroller.addEventListener("touchstart", () => {
+    touchPanOrigin = scroller.scrollLeft;
+  }, { passive: true });
+  const finishTouchPan = /* @__PURE__ */ __name(() => {
+    if (touchPanOrigin !== null && Math.abs(scroller.scrollLeft - touchPanOrigin) > 6)
+      measure("pan");
+    touchPanOrigin = null;
+  }, "finishTouchPan");
+  scroller.addEventListener("touchend", finishTouchPan, { passive: true });
+  scroller.addEventListener("touchcancel", finishTouchPan, { passive: true });
+  scroller.addEventListener("click", (e) => {
+    if (!dragged && plot.contains(e.target)) {
+      measure("inspect");
+      showAt(e.clientX);
+    }
+  });
+  scroller.addEventListener("wheel", (e) => {
+    if (Math.abs(e.deltaX) > 3)
+      wheelPanOrigin = scroller.scrollLeft;
+  }, { passive: true });
+  plot.addEventListener("keydown", (e) => {
+    if (e.key === "Home" || e.key === "Escape") {
+      e.preventDefault();
+      measure("return_to_now");
+      resetToNow();
+      scroller.scrollTo({ left: homeScroll(), behavior: "auto" });
+      return;
+    }
+    const step = { ArrowLeft: -1, ArrowRight: 1, ArrowDown: -1, ArrowUp: 1, PageUp: -24, PageDown: 24 }[e.key];
+    if (!step && e.key !== "End")
+      return;
+    measure("inspect");
+    e.preventDefault();
+    const idx = e.key === "End" ? geometry.drawTo : Math.max(geometry.drawFrom, Math.min(geometry.drawTo, selectedIdx + step));
+    const x = (idx - geometry.drawFrom) * geometry.ppd / 24;
+    scroller.scrollLeft = Math.max(0, GATE_W + x - scroller.clientWidth / 2);
+    showAt(plot.getBoundingClientRect().left + x);
+  });
+}
+function createChartMeasurement(capture) {
+  const seen = /* @__PURE__ */ new Set();
+  return (event, properties) => {
+    properties = properties || {};
+    const key = event + ":" + (properties.action || "");
+    if (seen.has(key))
+      return;
+    capture(event, { ...properties, chart_version: "tidal_v1", measurement_version: 1 });
+    seen.add(key);
+  };
+}
+function mountTidalChart(container) {
+  let inView = false;
+  const syncMotion = /* @__PURE__ */ __name(() => container.classList.toggle("motion-active", inView && !document.hidden), "syncMotion");
+  if (typeof IntersectionObserver === "function") {
+    const motionObserver = new IntersectionObserver((entries) => {
+      inView = entries.some((entry) => entry.isIntersecting);
+      syncMotion();
+    });
+    motionObserver.observe(container);
+    document.addEventListener("visibilitychange", syncMotion);
+  }
+  const networkId = container.getAttribute("data-network-id");
+  const measure = createChartMeasurement((event, properties) => {
+    if (!networkId)
+      return;
+    const send = /* @__PURE__ */ __name(() => window.loamAnalytics?.capture(event, { ...properties, network_id: networkId }), "send");
+    if (document.readyState === "loading")
+      document.addEventListener("DOMContentLoaded", send, { once: true });
+    else
+      send();
+  });
+  container.measureChart = measure;
+  if (networkId && typeof IntersectionObserver === "function") {
+    const observer = new IntersectionObserver((entries) => {
+      if (entries.some((entry) => entry.isIntersecting && entry.intersectionRatio >= 0.25) && container.querySelector(".plot")) {
+        measure("chart_viewed");
+        observer.disconnect();
+      }
+    }, { threshold: 0.25 });
+    observer.observe(container);
+  }
+  const trajectory = readTidalData(container);
+  const wrap = container.closest(".verdict-chart");
+  const floatEl = wrap ? wrap.querySelector(".verdict-float") : null;
+  const gradId = "gc" + Math.random().toString(36).slice(2, 8);
+  const closeChoosers = /* @__PURE__ */ __name((except) => {
+    container.querySelectorAll(".gate-actions[open]").forEach((chooser) => {
+      if (chooser !== except)
+        chooser.open = false;
+    });
+  }, "closeChoosers");
+  document.addEventListener("pointerdown", (event) => closeChoosers(event.target.closest(".gate-actions")));
+  container.addEventListener("keydown", (event) => {
+    const chooser = event.target.closest(".gate-actions[open]");
+    if (event.key === "Escape" && chooser) {
+      event.preventDefault();
+      chooser.open = false;
+      chooser.querySelector("summary").focus();
+    }
+  });
+  container.addEventListener("focusout", (event) => {
+    const chooser = event.target.closest(".gate-actions");
+    if (chooser && !chooser.contains(event.relatedTarget))
+      chooser.open = false;
+  });
+  let listenerController = null;
+  function render5() {
+    if (listenerController)
+      listenerController.abort();
+    listenerController = typeof AbortController === "function" ? new AbortController() : null;
+    const restoreState = typeof container._tidalSnapshot === "function" ? container._tidalSnapshot() : null;
+    const cs = getComputedStyle(container);
+    const ppd = parseFloat(cs.getPropertyValue("--ppd")) || 84;
+    const plotHVar = parseFloat(cs.getPropertyValue("--plotH")) || 230;
+    const dayH = parseFloat(cs.getPropertyValue("--dayH")) || 96;
+    const rainH = parseFloat(cs.getPropertyValue("--rainH")) || 44;
+    let padTop = 30;
+    let floating = false;
+    if (floatEl) {
+      floating = getComputedStyle(floatEl).position === "absolute";
+      padTop = floating ? floatEl.offsetHeight + 24 : 20;
+      if (floating)
+        container.style.setProperty("--plotH", padTop + 200 + "px");
+      else
+        container.style.removeProperty("--plotH");
+    }
+    const effectivePlotH = floating ? padTop + 200 : parseFloat(getComputedStyle(container).getPropertyValue("--plotH")) || plotHVar;
+    const rangeDims = { ppd, teaser: true };
+    const homeRange = resolveDrawRange(trajectory, rangeDims);
+    const assumedW = Math.max(0, (homeRange.lastFreeIdx - homeRange.drawFrom) * homeRange.pph);
+    const ASSUMED_VIEWPORT_PX = container.clientWidth || 390;
+    const homeScrollAssumed = Math.max(0, assumedW - ASSUMED_VIEWPORT_PX);
+    const initialFrame = frameForViewport(trajectory, rangeDims, homeScrollAssumed, ASSUMED_VIEWPORT_PX);
+    const geometryOptions = {
+      mode: "web",
+      light: false,
+      teaser: true,
+      ppd,
+      plotH: effectivePlotH,
+      dayH,
+      rainH,
+      padTop,
+      nowFact: container.getAttribute("data-now-fact") || "",
+      lo: initialFrame.lo,
+      hi: initialFrame.hi
+    };
+    container.style.setProperty("--plot-top", padTop + "px");
+    let geometry = buildTidalGeometry(trajectory, geometryOptions);
+    container.innerHTML = tidalChartMarkup(geometry, { interactive: true, gradId });
+    const gateHeight = Math.max(0, ...Array.from(container.querySelectorAll(".gate-card"), (card) => card.offsetHeight));
+    const neededPlotH = Math.max(effectivePlotH, padTop + gateHeight + 24 - dayH);
+    if (neededPlotH > effectivePlotH) {
+      container.style.setProperty("--plotH", neededPlotH + "px");
+      geometry = buildTidalGeometry(trajectory, { ...geometryOptions, plotH: neededPlotH });
+      container.innerHTML = tidalChartMarkup(geometry, { interactive: true, gradId });
+    }
+    wireInteractions(container, geometry, trajectory, gradId, listenerController ? listenerController.signal : null, restoreState);
+    if (floating && geometry.now) {
+      const tag = container.querySelector(".now-tip");
+      if (tag)
+        tag.style.top = padTop - 40 + "px";
+    }
+    return { padTop, floating };
+  }
+  __name(render5, "render");
+  let lastRender = render5();
+  let lastWidth = container.clientWidth;
+  const maybeRerenderOnResize = /* @__PURE__ */ __name(() => {
+    const w = container.clientWidth;
+    if (w === lastWidth)
+      return;
+    lastWidth = w;
+    lastRender = render5();
+  }, "maybeRerenderOnResize");
+  if (typeof ResizeObserver === "function") {
+    const ro = new ResizeObserver(() => maybeRerenderOnResize());
+    ro.observe(container);
+  } else {
+    let resizeTimer = null;
+    window.addEventListener("resize", () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(maybeRerenderOnResize, 160);
+    });
+  }
+  if (typeof document === "object" && document.fonts && typeof document.fonts.ready?.then === "function") {
+    document.fonts.ready.then(() => {
+      const newPadTop = floatEl && getComputedStyle(floatEl).position === "absolute" ? floatEl.offsetHeight + 24 : 20;
+      if (newPadTop !== lastRender.padTop)
+        lastRender = render5();
+    }).catch(() => {
+    });
+  }
+}
+function boot() {
+  if (typeof document !== "object")
+    return;
+  const nodes = document.querySelectorAll("[data-tidal-chart]");
+  for (let i = 0; i < nodes.length; i++)
+    mountTidalChart(nodes[i]);
+}
+boot();
+})();</script>
+        <p class="chart-reading-cue" aria-hidden="true"><span class="cue-series"><span class="cue-line"></span>Soil dryness</span><span class="cue-directions"><span class="cue-direction"><svg viewBox="0 0 12 14" focusable="false"><path d="M6 12V2M2 6l4-4 4 4"/></svg>Drier</span><span class="cue-direction"><svg viewBox="0 0 12 14" focusable="false"><path d="M6 2v10M2 8l4 4 4-4"/></svg>Wetter</span></span></p>
+      </div>
+      
+      <p class="verdict-meta">Updated Tuesday, October 13th, 2026 at 15:21 UTC. Modeled hourly. Verdict last changed: Tuesday, October 13th. Official closures and current trail conditions take priority.</p>
+    </section>
+    
+    
+  <section class="cta">
+    <div class="cta-copy">
+    <h2>Watch Green Mountain Park for free</h2>
+    <p>Download Loam for free and get trail-condition alerts. No account needed.</p><p class="install-context">After installing, search for <strong>Green Mountain Park</strong> and turn on alerts.</p><p class="install-context"><a href="loam://network/green-mountain-park" data-cta="trail-open-app">Already have Loam? Open this trail</a></p></div>
+    <div class="cta-actions">
+      <span class="store-badges store-badges--compact"><a href="https://apps.apple.com/app/loam-ride-conditions/id6777128177?pt=128999553&amp;ct=loam_web_trail_detail&amp;mt=8" target="_blank" rel="noopener" data-cta="trail-detail" aria-label="Download Loam on the App Store"><img src="/assets/download-on-app-store.svg" alt="Download on the App Store" width="132" height="44" loading="lazy" decoding="async" /></a><a href="https://play.google.com/store/apps/details?id=com.rasterfactory.loam&amp;referrer=utm_source%3Dloam_web%26utm_campaign%3Dloam_web_trail_detail" target="_blank" rel="noopener" data-cta="android-trail-detail" aria-label="Get Loam on Google Play"><img src="/assets/get-it-on-google-play.png" alt="Get it on Google Play" width="148" height="44" loading="lazy" decoding="async" /></a></span>
+    </div>
+  </section>
+  </div>
+</div>
+
+
+
+<main class="wrap">
+  <div class="col">
+  
+  <section class="section" id="conditions">
+    
+      <div class="answer-lede" id="rideable">
+        <h3>Is Green Mountain Park rideable today?</h3>
+        <p class="answer-copy">Yes. The live verdict is DRY, rideable now. No measurable rain in the past week.</p>
+      </div>
+    <div class="outlook-card">
+      
+      <div class="tl-caption"><span>Over the tracked history, Green Mountain Park has been rideable on 10 of the last 10 days. Loam also considers soil, slope, tree cover, and drying time.</span></div>
+      
+    <div class="conditions-feedback" data-conditions-feedback>
+      <div class="feedback-copy">
+        <h2>Did this match your ride?</h2>
+      </div>
+      <form class="feedback-form" novalidate>
+        <fieldset class="ride-day">
+          <legend class="sr-only">Which day did you ride?</legend>
+          <label><input type="radio" name="ride-day" value="today" required /> <span>Today</span></label>
+          <label><input type="radio" name="ride-day" value="yesterday" required /> <span>Yesterday</span></label>
+        </fieldset>
+        <div class="feedback-options" aria-label="How conditions compared with Loam's estimate">
+          <button type="button" data-direction="drier">Drier</button>
+          <button type="button" data-direction="onTarget">About right</button>
+          <button type="button" data-direction="wetter">Wetter</button>
+        </div>
+        <label class="feedback-hp" aria-hidden="true">Website<input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
+        <div class="feedback-challenge" hidden></div>
+        <p class="feedback-status" role="status" aria-live="polite"></p>
+      </form>
+      <div class="feedback-thanks" hidden>
+        <h2>Thanks for checking Loam</h2>
+        <p>Your report helps improve the estimate for Green Mountain Park.</p>
+        <p class="feedback-cta">Want the next PRIME alert? Get Loam free on <a href="https://apps.apple.com/app/loam-ride-conditions/id6777128177?pt=128999553&amp;ct=loam_web_feedback&amp;mt=8" data-cta="web-feedback">the App Store</a> or <a href="https://play.google.com/store/apps/details?id=com.rasterfactory.loam&amp;referrer=utm_source%3Dloam_web%26utm_campaign%3Dloam_web_feedback" target="_blank" rel="noopener" data-cta="android-web-feedback">Google Play</a>.</p>
+      </div>
+    </div>
+    </div>
+  </section>
+  <script>
+(function(){
+  function edgeFade(el){
+    if(!el)return;
+    function update(){
+      var max=el.scrollWidth-el.clientWidth;
+      if(max<=1){el.removeAttribute('data-edge-fade');return;}
+      var l=el.scrollLeft>1,r=el.scrollLeft<max-1;
+      var v=l&&r?'both':r?'right':l?'left':'';
+      if(v)el.setAttribute('data-edge-fade',v);else el.removeAttribute('data-edge-fade');
+    }
+    update();
+    el.addEventListener('scroll',update,{passive:true});
+    window.addEventListener('resize',update);
+  }
+  edgeFade(document.querySelector('.subnav .wrap'));
+})();
+</script>
+
+  <section class="section" id="terrain">
+    <div class="sec-head"><h2>Soil and terrain at Green Mountain Park</h2></div>
+    <div class="terrain-grid">
+      <div class="prose"><p>Green Mountain Park is a mountain bike trail network in Denver &amp; Golden, CO. Soil data at the sampled location is classified as rocky sandy. Open tree cover can allow more sun and wind exposure, helping drying. Terrain data indicates an elevation of about 6,792 ft, an average terrain slope of 7.3° and a predominant SW-facing aspect. Terrain slope does not measure the trail tread or its drainage features. Trails here include Summit Loop, North Access and Box O Rox Trail. Loam models conditions across the network; individual trails and constructed surfaces can differ from these environmental inputs. Official closures and conditions on the ground take priority.</p><p class="accuracy-link"><a href="/how-it-works/#accuracy">How we check ourselves</a></p></div>
+      
+    </div>
+    
+    <div class="factors-open"><h3 class="around-label">How these factors affect drying</h3>
+      <div class="factor-grid">
+        <div class="factor"><svg class="factor-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 16.3c2.2 0 4-1.83 4-4.05 0-1.16-.57-2.26-1.71-3.19S7.29 6.75 7 5.3c-.29 1.45-1.14 2.84-2.29 3.76S3 11.1 3 12.25c0 2.22 1.8 4.05 4 4.05z"/><path d="M12.56 6.6A10.97 10.97 0 0 0 14 3.02c.5 2.5 2 4.9 4 6.5s3 3.5 3 5.5a6.98 6.98 0 0 1-11.91 4.97"/></svg><h4>Soil<span>Rocky sandy</span></h4><p>The soil data includes about 55% rock fragments. The model uses this to adjust drainage; it does not measure how quickly every trail section dries. Drying behavior is modeled from the soil classification, not measured directly on the trail.</p></div>
+<div class="factor"><svg class="factor-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg><h4>Canopy<span>Open 14%</span></h4><p>Open tree cover can allow more sunlight and wind to reach the ground. Terrain, weather and trail construction also affect drying.</p></div>
+<div class="factor"><svg class="factor-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m8 3 4 8 5-5 5 15H2L8 3z"/></svg><h4>Terrain<span>Steep</span></h4><p>Steeper terrain can encourage runoff. Terrain slope does not measure the trail tread or its drainage features.</p></div>
+      </div>
+    </div>
+  </section>
+
+  
+
+  
+    <section class="section faq" id="faq">
+      <div class="sec-head"><h2>FAQ</h2></div>
+      <details class="qa"><summary>Can you ride Green Mountain Park right now?</summary><p>The current estimate for Green Mountain Park is DRY: rideable. Rideable now. Good window for the next ~10 hours. No measurable rain in the past week.</p></details>
+<details class="qa"><summary>Is Green Mountain Park muddy right now?</summary><p>Loam currently estimates dry conditions (DRY). The drying model accounts for about 55% rock fragments in the soil data. No measurable rain in the past week.</p></details>
+<details class="qa"><summary>What is the soil and trail surface like at Green Mountain Park?</summary><p>The soil data at the sampled location is classified as rocky sandy. This describes an environmental input, not a survey of every trail surface.</p></details>
+<details class="qa"><summary>How long does Green Mountain Park take to dry after rain?</summary><p>Green Mountain Park has no fixed drying time. Rainfall, soil moisture, shade and the weather that follows all matter. The model accounts for about 55% rock fragments in the soil data, but that does not establish a recovery time. Check the current estimate and wait until the trail surface is firm.</p></details>
+<details class="qa"><summary>Can you ride Green Mountain Park after rain?</summary><p>Rock fragments influence the drying model, but softer trail sections may need more time. Wait until the surface is firm. Check the current estimate before heading out, and turn back if your tires leave ruts.</p></details>
+<details class="qa"><summary>What does a frozen condition mean at Green Mountain Park?</summary><p>FROZEN means Loam estimates snow cover or frozen ground. It does not establish that riding is allowed or that every trail is frozen. Check posted winter access rules and watch for soft ground as temperatures rise.</p></details>
+<details class="qa"><summary>What trails are at Green Mountain Park?</summary><p>Trails at Green Mountain Park include Green Mountain, Rooney Valley Trail, Summit Loop, North Access and Box O Rox Trail. This is a partial list. The condition estimate covers the whole network, so individual trails may differ.</p></details>
+<details class="qa"><summary>What&#39;s the terrain and elevation like at Green Mountain Park?</summary><p>Terrain data indicates an elevation of about 6,792 ft, an average terrain slope of 7.3° and a predominant SW-facing aspect. Terrain slope does not measure the trail tread or its drainage features.</p></details>
+    </section>
+
+  <details class="embed" id="embed">
+    <!-- One embed surface, not two: the steward strip by the download CTA IS
+         this panel's summary, so the prompt and the workbench are the same
+         element (Ryan, 2026-08-05: the second prompt lower on the page was
+         redundant). #485 still holds: the sentence span carries
+         role="heading" aria-level="2" so heading navigation lands on Embed,
+         and the native <details>/<summary> pair is unchanged, so keyboard
+         toggling and find-on-page auto-expand keep working. -->
+    <summary><span>
+      <span class="embed-aud">Trail stewards, clubs and bike shops:</span> <span class="embed-line" role="heading" aria-level="2">Put live conditions on your site with a free badge that updates itself.</span> <span class="embed-open">Get the embed code &rarr;</span>
+    </span></summary>
+    <div class="embed-body">
+      <div class="embed-preview">
+        <iframe src="/embed/green-mountain-park" title="Green Mountain Park live trail conditions from Loam" width="420" height="480" loading="lazy"></iframe>
+      </div>
+      <div class="embed-themes" aria-label="Badge appearance"><span class="embed-themes-label">Appearance</span><button class="embed-theme" type="button" data-theme="default" aria-pressed="true">Neutral</button><button class="embed-theme" type="button" data-theme="light" aria-pressed="false">Light</button><button class="embed-theme" type="button" data-theme="dark" aria-pressed="false">Dark</button></div>
+      <div class="embed-code-wrap">
+        <textarea class="embed-code" data-base-src="https://loamrideconditions.com/embed/green-mountain-park" data-credit="&lt;p style=&quot;margin:8px 0 0;font-size:13px&quot;&gt;Live conditions for &lt;a href=&quot;https://loamrideconditions.com/trails/green-mountain-park&quot;&gt;Green Mountain Park&lt;/a&gt;, powered by Loam.&lt;/p&gt;" readonly spellcheck="false" aria-label="Embed code for Green Mountain Park trail conditions">&lt;iframe src=&quot;https://loamrideconditions.com/embed/green-mountain-park&quot; title=&quot;Green Mountain Park live trail conditions from Loam&quot; width=&quot;420&quot; height=&quot;480&quot; style=&quot;border:0;border-radius:16px;max-width:100%&quot; loading=&quot;lazy&quot;&gt;&lt;/iframe&gt;
+&lt;p style=&quot;margin:8px 0 0;font-size:13px&quot;&gt;Live conditions for &lt;a href=&quot;https://loamrideconditions.com/trails/green-mountain-park&quot;&gt;Green Mountain Park&lt;/a&gt;, powered by Loam.&lt;/p&gt;</textarea>
+        <button class="embed-copy" type="button" data-network-id="green-mountain-park">Copy embed code</button>
+      </div>
+      <p class="embed-note">Loam is a rider app. The badge helps riders find it, so standard embeds are free. No account required. The snippet includes a short text link to the live conditions page; please keep it so riders can open full details. <a href="/embed-builder">Need several networks? Build a free trail conditions widget.</a> <a href="/partners/">How Loam works and why it is free</a>.</p>
+    </div>
+  </details>
+
+  <aside class="sponsor-slot"><a class="sponsor-card" href="https://ridequiver.com/?utm_source=loam&amp;utm_medium=sponsor-slot&amp;utm_content=trail-detail" target="_blank" rel="sponsored noopener" data-sponsor="quiver" data-sponsor-placement="trail-detail"><span class="sponsor-k">Sponsor</span><span class="sponsor-copy"><svg viewBox="0 0 48 48" width="17" height="17" fill="none" aria-hidden="true" focusable="false"><g transform="translate(-8.344 -7.494) scale(1.18)"><g transform="rotate(42 24 24)"><path d="M 32.33 31.18 A 11 11 0 1 1 32.33 16.82" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" fill="none"/><rect x="20.6" y="20.6" width="26.2" height="6.8" rx="3.4" fill="currentColor"/></g></g></svg><strong class="sponsor-name">Quiver</strong> replaces your bike spreadsheet. Start with just a bike name, get the factory build, and keep every part and change with the bike. From the maker of Loam.</span><span class="sponsor-dest">ridequiver.com<span aria-hidden="true"> &rarr;</span></span></a></aside>
+  </div><div class="rail"><section class="section" id="profile"><div class="sec-head"><h2>Network profile</h2></div>
+      <div class="spec">
+        <h3>Network profile</h3>
+        <dl><div class="row"><dt>Soil</dt><dd>Rocky sandy<small>drainage input · modeled</small></dd></div><div class="row"><dt>Terrain</dt><dd>Steep<small>terrain slope</small></dd></div><div class="row"><dt>Tree cover</dt><dd>14%<small>Open</small></dd></div><div class="row"><dt>Elevation</dt><dd>6,792 ft</dd></div><div class="row"><dt>Average grade</dt><dd>7.3°</dd></div><div class="row"><dt>Predominant aspect</dt><dd>SW-facing</dd></div></dl>
+      </div>
+      <div class="around-row around-trails">
+        <h3 class="around-label">Named trails</h3>
+        <ul class="trail-names">
+          <li>Green Mountain</li>
+<li>Rooney Valley Trail</li>
+<li>Summit Loop</li>
+<li>North Access</li>
+<li>Box O Rox Trail</li>
+        </ul>
+        <p class="around-note">This is a partial trail list. The condition estimate covers the whole network. Trail names from public agency data and © OpenStreetMap contributors.</p>
+      </div></section>
+    <section class="section" id="trails">
+      <div class="sec-head"><h2>Around Green Mountain Park</h2></div>
+      <div class="around-card"><div class="around-grid">
+      <div class="around-row around-nearby">
+        <h3 class="around-label">Nearby networks</h3>
+        <div class="nearby-list">
+          <a href="/trails/mount-falcon-park" class="nb"><span class="nb-name">Mount Falcon Park<svg class="vmark-ico" viewBox="0 0 24 24" role="img" aria-label="Location and terrain checked"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><path d="m9 10 2 2 4-4"/></svg></span><span class="nb-dist">2 MI</span></a>
+<a href="/trails/dakota-ridge" class="nb"><span class="nb-name">Dakota Ridge<svg class="vmark-ico" viewBox="0 0 24 24" role="img" aria-label="Location and terrain checked"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><path d="m9 10 2 2 4-4"/></svg></span><span class="nb-dist">2 MI</span></a>
+<a href="/trails/apex-park" class="nb"><span class="nb-name">Apex Park<svg class="vmark-ico" viewBox="0 0 24 24" role="img" aria-label="Location and terrain checked"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><path d="m9 10 2 2 4-4"/></svg></span><span class="nb-dist">4 MI</span></a>
+<a href="/trails/white-ranch-park" class="nb"><span class="nb-name">White Ranch Park<svg class="vmark-ico" viewBox="0 0 24 24" role="img" aria-label="Location and terrain checked"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><path d="m9 10 2 2 4-4"/></svg></span><span class="nb-dist">9 MI</span></a>
+<a href="/trails/alderfer-three-sisters-park" class="nb"><span class="nb-name">Alderfer/Three Sisters Park<svg class="vmark-ico" viewBox="0 0 24 24" role="img" aria-label="Location and terrain checked"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><path d="m9 10 2 2 4-4"/></svg></span><span class="nb-dist">11 MI</span></a>
+        </div>
+        <p class="region-link"><a href="/regions/denver-golden">Every Denver &amp; Golden network &rarr;</a></p>
+      </div></div>
+      </div>
+    </section></div>
+
+  <footer class="site-footer"><nav class="site-footer-links" aria-label="Site"><a href="/trails">Trail conditions</a><a href="/states">States</a><a href="/regions">Regions</a><a href="/guides">Guides</a><a href="/reports">Reports</a><a href="/how-it-works/">How it works</a><a href="/accuracy">Accuracy</a><a href="/compare/">Compare apps</a><a href="/partners/">For organizations</a><a href="/sources/">Data sources</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a href="/support/">Support</a><a href="/cdn-cgi/l/email-protection#d4bcb1b8b8bb94b8bbb5b9a6bdb0b1b7bbbab0bda0bdbbbaa7fab7bbb9">Contact</a><a href="https://www.instagram.com/loamrideconditions/" rel="me">Instagram</a></nav><p class="site-footer-note">Loam estimates trail conditions from soil (USDA SSURGO), terrain, canopy, and live weather (Open-Meteo). &copy; 2026 Raster Factory.</p></footer>
+</main>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+(function(){
+  var root=document.querySelector('[data-conditions-feedback]');
+  if(!root)return;
+  var config={"endpoint":"https://api.loamrideconditions.com/feedback","networkId":"green-mountain-park","networkName":"Green Mountain Park","displayedScore":"green","predictionId":"839930cb-9d0d-4003-b567-945026a85db9"};
+  var form=root.querySelector('.feedback-form');
+  var status=root.querySelector('.feedback-status');
+  var challenge=root.querySelector('.feedback-challenge');
+  var buttons=Array.prototype.slice.call(root.querySelectorAll('[data-direction]'));
+  var pendingDirection=null;
+
+  function capture(name,properties){if(window.loamAnalytics){window.loamAnalytics.capture(name,properties);}}
+  function setStatus(message,isError){status.textContent=message||'';status.classList.toggle('is-error',!!isError);}
+  function setBusy(busy){buttons.forEach(function(button){button.disabled=busy;});}
+  function makeBrowserId(){
+    var key='loam_feedback_browser_id';
+    try{var saved=window.localStorage.getItem(key);if(/^(?:[a-f0-9]{32,64}|[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})$/i.test(saved||''))return saved;}catch(_){}
+    var id='';
+    if(window.crypto&&typeof window.crypto.randomUUID==='function')id=window.crypto.randomUUID();
+    else if(window.crypto&&typeof window.crypto.getRandomValues==='function'){
+      var bytes=new Uint8Array(16);window.crypto.getRandomValues(bytes);id=Array.prototype.map.call(bytes,function(value){return value.toString(16).padStart(2,'0');}).join('');
+    }else{id=String(Date.now())+Math.random().toString(16).slice(2)+Math.random().toString(16).slice(2);}
+    try{window.localStorage.setItem(key,id);}catch(_){}
+    return id;
+  }
+  function observedDate(rideDay){
+    var date=new Date();
+    if(rideDay==='yesterday')date.setDate(date.getDate()-1);
+    var month=String(date.getMonth()+1).padStart(2,'0');
+    var day=String(date.getDate()).padStart(2,'0');
+    return date.getFullYear()+'-'+month+'-'+day;
+  }
+  function selectedRideDay(){var selected=form.querySelector('input[name="ride-day"]:checked');return selected?selected.value:null;}
+  function outcomeProperties(direction,rideDay,outcome){return{network_id:config.networkId,moisture_direction:direction,ride_day:rideDay,outcome:outcome};}
+
+  function renderChallenge(siteKey){
+    if(typeof siteKey!=='string'||!siteKey){setStatus('Verification is unavailable. Please try again later.',true);return;}
+    challenge.hidden=false;
+    setStatus('Please verify that you are a rider, then your report will be sent.',false);
+    var render=function(){
+      challenge.innerHTML='';
+      window.turnstile.render(challenge,{sitekey:siteKey,theme:'dark',callback:function(token){submit(pendingDirection,token,true);},'expired-callback':function(){setStatus('Verification expired. Please try again.',true);}});
+    };
+    if(window.turnstile){render();return;}
+    var existing=document.querySelector('script[data-loam-turnstile]');
+    if(existing){existing.addEventListener('load',render,{once:true});return;}
+    var script=document.createElement('script');
+    script.src='https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+    script.async=true;script.defer=true;script.dataset.loamTurnstile='true';
+    script.addEventListener('load',render,{once:true});
+    script.addEventListener('error',function(){setStatus('Verification could not load. Please try again later.',true);},{once:true});
+    document.head.appendChild(script);
+  }
+
+  async function submit(direction,turnstileToken,isRetry){
+    var rideDay=selectedRideDay();
+    if(!rideDay){setStatus('Choose whether you rode today or yesterday.',true);return;}
+    pendingDirection=direction;
+    setBusy(true);setStatus('Sending your report...',false);
+    if(!isRetry)capture('web_conditions_feedback_submitted',outcomeProperties(direction,rideDay,'started'));
+    var payload={
+      source:'webManual',networkId:config.networkId,moistureDirection:direction,
+      rideDay:rideDay,observedDate:observedDate(rideDay),recentRideAttested:true,
+      displayedScore:config.displayedScore,predictionId:config.predictionId,browserId:makeBrowserId(),
+      website:form.elements.website.value,ts:Date.now()
+    };
+    if(turnstileToken)payload.turnstileToken=turnstileToken;
+    try{
+      var response=await fetch(config.endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+      var data={};try{data=await response.json();}catch(_){}
+      if(response.status===403&&data.challengeRequired){
+        setBusy(false);capture('web_conditions_feedback_completed',outcomeProperties(direction,rideDay,'challenge_required'));renderChallenge(data.siteKey);return;
+      }
+      if(!response.ok){
+        var outcome=data.alreadyReported?'already_reported':response.status===429?'rate_limited':'error';
+        capture('web_conditions_feedback_completed',outcomeProperties(direction,rideDay,outcome));
+        setStatus(data.error||'Your report could not be sent. Please try again.',true);setBusy(false);return;
+      }
+      capture('web_conditions_feedback_completed',outcomeProperties(direction,rideDay,'success'));
+      root.querySelector('.feedback-copy').hidden=true;form.hidden=true;root.querySelector('.feedback-thanks').hidden=false;
+    }catch(_){
+      capture('web_conditions_feedback_completed',outcomeProperties(direction,rideDay,'network_error'));
+      setStatus('Your report could not be sent. Check your connection and try again.',true);setBusy(false);
+    }
+  }
+
+  buttons.forEach(function(button){button.addEventListener('click',function(){submit(button.getAttribute('data-direction'),null,false);});});
+})();
+(function(){
+  var root=document.querySelector('[data-dryout-signup]');
+  if(!root)return;
+  var config={"endpoint":"https://api.loamrideconditions.com/notify-me","networkId":"green-mountain-park"};
+  var form=root.querySelector('.dryout-form');
+  var input=form.querySelector('#dryout-email');
+  var button=form.querySelector('button');
+  var challenge=form.querySelector('.dryout-challenge');
+  var status=form.querySelector('.dryout-status');
+  var HELPER='One email, no account, unsubscribe in one tap.';
+  var pendingEmail=null;
+
+  function capture(name,properties){if(window.loamAnalytics){window.loamAnalytics.capture(name,Object.assign({network_id:config.networkId},properties));}}
+  function setStatus(message,isError){status.textContent=message||HELPER;status.classList.toggle('is-error',!!isError);}
+  function setBusy(busy){button.disabled=busy;input.disabled=busy;}
+  function showSuccess(message){
+    form.querySelector('label').hidden=true;
+    root.querySelector('.dryout-row').hidden=true;
+    challenge.hidden=true;
+    setStatus(message,false);
+  }
+
+  function renderChallenge(siteKey){
+    if(typeof siteKey!=='string'||!siteKey){setStatus('Verification is unavailable. Please try again later.',true);return;}
+    challenge.hidden=false;
+    setStatus('Please verify that you are a rider, then your signup will go through.',false);
+    var render=function(){
+      challenge.innerHTML='';
+      window.turnstile.render(challenge,{sitekey:siteKey,theme:'dark',callback:function(token){submit(pendingEmail,token,true);},'expired-callback':function(){setStatus('Verification expired. Please try again.',true);}});
+    };
+    if(window.turnstile){render();return;}
+    var existing=document.querySelector('script[data-loam-turnstile]');
+    if(existing){existing.addEventListener('load',render,{once:true});return;}
+    var script=document.createElement('script');
+    script.src='https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+    script.async=true;script.defer=true;script.dataset.loamTurnstile='true';
+    script.addEventListener('load',render,{once:true});
+    script.addEventListener('error',function(){setStatus('Verification could not load. Please try again later.',true);},{once:true});
+    document.head.appendChild(script);
+  }
+
+  async function submit(email,turnstileToken,isRetry){
+    pendingEmail=email;
+    setBusy(true);setStatus('Sending...',false);
+    if(!isRetry)capture('dryout_signup_submitted',{outcome:'started'});
+    var payload={email:email,networkId:config.networkId};
+    if(turnstileToken)payload.turnstileToken=turnstileToken;
+    try{
+      var response=await fetch(config.endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+      var data={};try{data=await response.json();}catch(_){}
+      if(response.status===403&&data.challengeRequired){
+        setBusy(false);capture('dryout_signup_submitted',{outcome:'challenge_required'});renderChallenge(data.siteKey);return;
+      }
+      if(response.status===503){
+        capture('dryout_signup_submitted',{outcome:'alerts_off'});
+        setStatus('Email alerts are not switched on yet.',true);setBusy(false);return;
+      }
+      if(!response.ok){
+        capture('dryout_signup_submitted',{outcome:response.status===429?'rate_limited':'error'});
+        setStatus(data.error||'Could not sign up. Please try again.',true);setBusy(false);return;
+      }
+      if(data.status==='already_active'){
+        capture('dryout_signup_submitted',{outcome:'already_active'});
+        showSuccess("You're already on the list for this trail.");
+        return;
+      }
+      capture('dryout_signup_submitted',{outcome:'success'});
+      showSuccess('Check your inbox to confirm.');
+    }catch(_){
+      capture('dryout_signup_submitted',{outcome:'network_error'});
+      setStatus('Could not sign up. Check your connection and try again.',true);setBusy(false);
+    }
+  }
+
+  form.addEventListener('submit',function(e){
+    e.preventDefault();
+    var email=input.value.trim();
+    if(!email){setStatus('Enter an email address.',true);return;}
+    submit(email,null,false);
+  });
+})();
+document.addEventListener('DOMContentLoaded',function(){if(window.loamAnalytics)window.loamAnalytics.capture('trail_page_viewed',{network_id:'green-mountain-park',chart_version:'tidal_v1',measurement_version:1});},{once:true});
+document.addEventListener('click',function(e){var a=e.target.closest('a[data-cta="trail-open-app"]');if(a&&window.loamAnalytics){window.loamAnalytics.capture('app_open_click',{placement:'trail-detail',network_id:'green-mountain-park'});}});
+document.addEventListener('click',function(e){var a=e.target.closest('a[href*="apps.apple.com"]');if(a&&window.loamAnalytics){window.loamAnalytics.capture('trail_store_clicked',{network_id:'green-mountain-park',store:'ios',placement:a.getAttribute('data-cta')||'trail-detail',chart_version:'tidal_v1',measurement_version:1});window.loamAnalytics.capture('app_store_click',{placement:a.getAttribute('data-cta')||'trail-detail',link_url:a.href,network_id:'green-mountain-park'});}});
+document.addEventListener('click',function(e){var a=e.target.closest('a[href*="play.google.com"]');if(a&&window.loamAnalytics){window.loamAnalytics.capture('trail_store_clicked',{network_id:'green-mountain-park',store:'android',placement:a.getAttribute('data-cta')||'trail-detail',chart_version:'tidal_v1',measurement_version:1});window.loamAnalytics.capture('play_store_click',{placement:a.getAttribute('data-cta')||'trail-detail',link_url:a.href,network_id:'green-mountain-park'});}});
+document.addEventListener('click',function(e){var a=e.target.closest('a[data-steward-org]');if(a&&window.loamAnalytics){window.loamAnalytics.capture('steward_org_click',{org:a.getAttribute('data-steward-org'),network_id:'green-mountain-park'});}});
+document.addEventListener('click',function(e){var a=e.target.closest('a[data-sponsor]');if(a&&window.loamAnalytics){window.loamAnalytics.capture('sponsor_click',{sponsor:a.getAttribute('data-sponsor'),placement:a.getAttribute('data-sponsor-placement')||'',link_url:a.href});}});
+document.addEventListener('toggle',function(e){var d=e.target;if(d&&d.id==='embed'&&d.open&&window.loamAnalytics){window.loamAnalytics.capture('embed_row_click',{network_id:'green-mountain-park'});}},true);
+document.addEventListener('click',function(e){var b=e.target.closest('.embed-theme');if(!b)return;var root=b.closest('.embed-body');var theme=b.getAttribute('data-theme');root.querySelectorAll('.embed-theme').forEach(function(option){option.setAttribute('aria-pressed',String(option===b));});var frame=root.querySelector('.embed-preview iframe');var code=root.querySelector('.embed-code');var suffix=theme==='default'?'':'?theme='+theme;frame.src='/embed/green-mountain-park'+suffix;var publicUrl=code.getAttribute('data-base-src')+suffix;code.value='<iframe src="'+publicUrl+'" title="'+frame.title.replace(/"/g,'&quot;')+'" width="420" height="480" style="border:0;border-radius:16px;max-width:100%" loading="lazy"></iframe>\n'+code.getAttribute('data-credit');});
+document.addEventListener('click',function(e){var b=e.target.closest('.embed-copy');if(!b)return;var t=b.parentElement.querySelector('.embed-code');var done=function(){b.textContent='Copied';setTimeout(function(){b.textContent='Copy embed code';},1800);if(window.loamAnalytics){window.loamAnalytics.capture('badge_embed_copy',{network_id:b.getAttribute('data-network-id')});}};if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(t.value).then(done).catch(function(){t.select();document.execCommand('copy');done();});}else{t.select();document.execCommand('copy');done();}});
+</script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a49f725d1d2ab188',t:'MTc5MTkwNjA2OA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

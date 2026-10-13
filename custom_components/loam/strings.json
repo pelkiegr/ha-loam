@@ -1,0 +1,59 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Find a trail network",
+        "description": "Search Loam by zip code, town, or trail network name.",
+        "data": {
+          "query": "Zip code or name"
+        }
+      },
+      "network": {
+        "title": "Choose a trail network",
+        "description": "Only networks with a public page on loamrideconditions.com are listed.",
+        "data": {
+          "network_id": "Trail network"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Could not reach loamrideconditions.com.",
+      "no_results": "No new trail networks with a public page matched that search."
+    },
+    "abort": {
+      "already_configured": "This trail network is already configured."
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "rideable": {
+        "name": "Rideable"
+      }
+    },
+    "sensor": {
+      "status": {
+        "name": "Status",
+        "state": {
+          "prime": "Prime",
+          "dry": "Dry",
+          "dusty": "Dusty",
+          "caution": "Caution",
+          "stay_off": "Stay off",
+          "frozen": "Frozen"
+        }
+      },
+      "outlook": {
+        "name": "Outlook"
+      },
+      "note": {
+        "name": "Note"
+      },
+      "last_rain": {
+        "name": "Last rain"
+      },
+      "observed_at": {
+        "name": "Modeled at"
+      }
+    }
+  }
+}

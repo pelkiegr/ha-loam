@@ -1,0 +1,34 @@
+{
+  "entity": {
+    "binary_sensor": {
+      "rideable": {
+        "default": "mdi:bike",
+        "state": {
+          "on": "mdi:bike-fast"
+        }
+      }
+    },
+    "sensor": {
+      "status": {
+        "default": "mdi:bike",
+        "state": {
+          "prime": "mdi:check-circle",
+          "dry": "mdi:check-circle",
+          "dusty": "mdi:weather-dust",
+          "caution": "mdi:alert",
+          "stay_off": "mdi:close-octagon",
+          "frozen": "mdi:snowflake"
+        }
+      },
+      "outlook": {
+        "default": "mdi:crystal-ball"
+      },
+      "note": {
+        "default": "mdi:note-text-outline"
+      },
+      "last_rain": {
+        "default": "mdi:weather-rainy"
+      }
+    }
+  }
+}
