@@ -1,4 +1,4 @@
-<img src="custom_components/loam/brand/icon.png" alt="Loam" width="96" align="right">
+<img src="https://raw.githubusercontent.com/pelkiegr/ha-loam/main/custom_components/loam/brand/icon.png" alt="Loam" width="96" align="right">
 
 # Loam Ride Conditions for Home Assistant
 
