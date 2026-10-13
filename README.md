@@ -52,6 +52,7 @@ days_back: 3          # optional, history shown before "now" (1–10)
 ```yaml
 type: custom:loam-trails-card
 title: Trail conditions   # optional
+days_back: 3              # optional, history in the expanded chart
 entities:
   - sensor.green_mountain_park_status
   - sensor.dakota_ridge_status
@@ -61,9 +62,14 @@ Any entity of a trail works; the card looks up the trail it belongs to.
 
 ![Loam cards](https://raw.githubusercontent.com/pelkiegr/ha-loam/main/docs/cards.png)
 
+Tap a row in the trails card to expand that trail's facts and drying chart
+inline; tap again to collapse it.
+
+![Expanded trails card](https://raw.githubusercontent.com/pelkiegr/ha-loam/main/docs/trails-card.png)
+
 The trail card's chart shows hourly modeled dryness colored by status, with
 the forecast dashed, hourly rain as blue bars, and each day's high and rain
-total underneath. Click a trail name or row to open its more-info dialog.
+total underneath. Click the trail card's name to open its more-info dialog.
 
 ## Development
 

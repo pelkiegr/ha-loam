@@ -409,6 +409,11 @@ const CARD_STYLES = `
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
   .row .word { font-size: 20px; text-align: right; }
+  .row.open { background: rgba(240, 248, 236, 0.04); }
+  .row.open .sub { white-space: normal; }
+  .detail { padding-top: 4px; background: rgba(240, 248, 236, 0.04); }
+  .detail header, .detail .verdict { display: none; }
+  .detail .facts { border-top: 0; padding-top: 2px; }
   .sparkline { display: block; width: 100%; height: 34px; }
   @container (max-width: 380px) {
     .row { grid-template-columns: 12px minmax(0, 1fr) 76px; }
@@ -417,6 +422,56 @@ const CARD_STYLES = `
 `;
 
 /* ---------- Cards ---------- */
+
+function trailDetailHtml(hass, data, { daysBack = 3, extraClass = "" } = {}) {
+  const meta = statusMeta(data.status);
+  const change = nextConfirmedChange(data);
+  const today = todaysWeather(data);
+  const dryness = currentDryness(data);
+  const modeled = data.observed_at
+    ? dateFormatter(hass, { hour: "numeric", minute: "2-digit" }).format(new Date(data.observed_at))
+    : null;
+  const todayText = today
+    ? [formatTemperature(hass, today.temp_max_c), formatRain(hass, today.precipitation_in)]
+        .filter(Boolean)
+        .join(" · ")
+    : "";
+
+  return `<div class="loam ${extraClass}" style="--accent:${meta.color}">
+    <header>
+      <div class="name">${escapeHtml(data.name)}</div>
+      <a class="place" href="${escapeHtml(data.url)}" target="_blank" rel="noreferrer">${escapeHtml(
+        data.location || "",
+      )}</a>
+    </header>
+    <div class="verdict">
+      <div class="status"><span class="dot"></span><span class="word">${escapeHtml(
+        data.status,
+      )}</span></div>
+      <div class="outlook">${escapeHtml(data.outlook || data.status_label || "")}</div>
+      ${
+        change
+          ? `<div class="next"><strong>${escapeHtml(formatChangeTime(hass, change.at))}</strong>
+              turns <span class="to" style="color:${statusMeta(change.to).color}">${escapeHtml(
+                statusMeta(change.to).label,
+              )}</span></div>`
+          : ""
+      }
+    </div>
+    <dl class="facts">
+      <div><dt>Recent rain</dt><dd>${escapeHtml(data.last_rain || "—")}</dd></div>
+      ${todayText ? `<div><dt>Today</dt><dd>${escapeHtml(todayText)}</dd></div>` : ""}
+      ${dryness == null ? "" : `<div><dt>Dryness</dt><dd>${Math.round(dryness * 100)}%</dd></div>`}
+    </dl>
+    ${renderDryingChart(hass, data, { daysBack: daysBack })}
+    <footer>
+      <span>${escapeHtml(data.note || "")}</span>
+      <span>${modeled ? `Modeled ${escapeHtml(modeled)} · ` : ""}<a href="${escapeHtml(
+        data.url,
+      )}" target="_blank" rel="noreferrer">Loam</a></span>
+    </footer>
+  </div>`;
+}
 
 class LoamCardBase extends HTMLElement {
   constructor() {
@@ -504,61 +559,14 @@ class LoamTrailCard extends LoamCardBase {
     const [result] = this._results || [];
     if (!result) return this._paint(`<div class="message">Loading trail conditions…</div>`);
     if (result.error) return this._paint(`<div class="message">${escapeHtml(result.error)}</div>`);
-    this._paint(this._trailHtml(result.data));
+    this._paint(
+      trailDetailHtml(this._hass, result.data, {
+        daysBack: Number(this._config.days_back) || 3,
+      }),
+    );
     this.shadowRoot.querySelector(".name").addEventListener("click", () =>
       openMoreInfo(this, this._config.entity),
     );
-  }
-
-  _trailHtml(data) {
-    const hass = this._hass;
-    const meta = statusMeta(data.status);
-    const change = nextConfirmedChange(data);
-    const today = todaysWeather(data);
-    const dryness = currentDryness(data);
-    const modeled = data.observed_at
-      ? dateFormatter(hass, { hour: "numeric", minute: "2-digit" }).format(new Date(data.observed_at))
-      : null;
-    const todayText = today
-      ? [formatTemperature(hass, today.temp_max_c), formatRain(hass, today.precipitation_in)]
-          .filter(Boolean)
-          .join(" · ")
-      : "";
-
-    return `<div class="loam" style="--accent:${meta.color}">
-      <header>
-        <div class="name">${escapeHtml(data.name)}</div>
-        <a class="place" href="${escapeHtml(data.url)}" target="_blank" rel="noreferrer">${escapeHtml(
-          data.location || "",
-        )}</a>
-      </header>
-      <div class="verdict">
-        <div class="status"><span class="dot"></span><span class="word">${escapeHtml(
-          data.status,
-        )}</span></div>
-        <div class="outlook">${escapeHtml(data.outlook || data.status_label || "")}</div>
-        ${
-          change
-            ? `<div class="next"><strong>${escapeHtml(formatChangeTime(hass, change.at))}</strong>
-                turns <span class="to" style="color:${statusMeta(change.to).color}">${escapeHtml(
-                  statusMeta(change.to).label,
-                )}</span></div>`
-            : ""
-        }
-      </div>
-      <dl class="facts">
-        <div><dt>Recent rain</dt><dd>${escapeHtml(data.last_rain || "—")}</dd></div>
-        ${todayText ? `<div><dt>Today</dt><dd>${escapeHtml(todayText)}</dd></div>` : ""}
-        ${dryness == null ? "" : `<div><dt>Dryness</dt><dd>${Math.round(dryness * 100)}%</dd></div>`}
-      </dl>
-      ${renderDryingChart(hass, data, { daysBack: Number(this._config.days_back) || 3 })}
-      <footer>
-        <span>${escapeHtml(data.note || "")}</span>
-        <span>${modeled ? `Modeled ${escapeHtml(modeled)} · ` : ""}<a href="${escapeHtml(
-          data.url,
-        )}" target="_blank" rel="noreferrer">Loam</a></span>
-      </footer>
-    </div>`;
   }
 }
 
@@ -572,6 +580,7 @@ class LoamTrailsCard extends LoamCardBase {
           required: true,
           selector: { entity: { multiple: true, integration: "loam", domain: "sensor" } },
         },
+        { name: "days_back", selector: { number: { min: 1, max: 10, mode: "box" } } },
       ],
     };
   }
@@ -611,8 +620,13 @@ class LoamTrailsCard extends LoamCardBase {
       `<div class="loam list">${title}${rows || `<div class="message">Loading…</div>`}</div>`,
     );
     this.shadowRoot.querySelectorAll(".row").forEach((row) =>
-      row.addEventListener("click", () => openMoreInfo(this, row.dataset.entity)),
+      row.addEventListener("click", () => this._toggle(row.dataset.entity)),
     );
+  }
+
+  _toggle(entityId) {
+    this._expanded = this._expanded === entityId ? null : entityId;
+    this._render();
   }
 
   _rowHtml({ entityId, data, error }) {
@@ -629,12 +643,20 @@ class LoamTrailsCard extends LoamCardBase {
     ]
       .filter(Boolean)
       .join(" · ");
-    return `<button class="row" data-entity="${escapeHtml(entityId)}" style="--accent:${meta.color}">
+    const expanded = this._expanded === entityId;
+    const row = `<button class="row ${expanded ? "open" : ""}" data-entity="${escapeHtml(entityId)}"
+        style="--accent:${meta.color}" aria-expanded="${expanded}">
       <span class="dot"></span>
       <div><div class="name">${escapeHtml(data.name)}</div><div class="sub">${escapeHtml(sub)}</div></div>
       <div class="spark">${renderSparkline(data)}</div>
       <div class="word">${escapeHtml(data.status)}</div>
     </button>`;
+    if (!expanded) return row;
+    const detail = trailDetailHtml(this._hass, data, {
+      daysBack: Number(this._config.days_back) || 3,
+      extraClass: "detail",
+    });
+    return row + detail;
   }
 }
 
@@ -653,7 +675,7 @@ window.customCards.push(
   {
     type: "loam-trails-card",
     name: "Loam trails",
-    description: "Compact list of trails with status and a forecast sparkline.",
+    description: "Compact list of trails; tap one to expand its full conditions and drying chart.",
     preview: true,
     documentationURL: "https://github.com/pelkiegr/ha-loam",
   },
