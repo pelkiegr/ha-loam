@@ -18,6 +18,18 @@ const ZONES = [
   { status: "DUSTY", lo: 0.97, hi: 1 },
 ];
 
+const RIDEABILITY_ORDER = ["PRIME", "DRY", "DUSTY", "CAUTION", "FROZEN", "STAY OFF"];
+const SORTS = {
+  config: () => 0,
+  name: (a, b) => (a.data?.name || a.entityId).localeCompare(b.data?.name || b.entityId),
+  rideable: (a, b) => rideabilityRank(a) - rideabilityRank(b) || (b.dryness ?? -1) - (a.dryness ?? -1),
+};
+
+function rideabilityRank(result) {
+  const rank = RIDEABILITY_ORDER.indexOf((result.data?.status || "").toUpperCase());
+  return rank === -1 ? RIDEABILITY_ORDER.length : rank;
+}
+
 const RAIN_COLOR = "#7eb8d4";
 const HOUR_MS = 3600000;
 const DAY_MS = 24 * HOUR_MS;
@@ -580,6 +592,19 @@ class LoamTrailsCard extends LoamCardBase {
           required: true,
           selector: { entity: { multiple: true, integration: "loam", domain: "sensor" } },
         },
+        {
+          name: "sort",
+          selector: {
+            select: {
+              mode: "dropdown",
+              options: [
+                { value: "config", label: "As listed" },
+                { value: "rideable", label: "Most rideable first" },
+                { value: "name", label: "Name" },
+              ],
+            },
+          },
+        },
         { name: "days_back", selector: { number: { min: 1, max: 10, mode: "box" } } },
       ],
     };
@@ -612,7 +637,7 @@ class LoamTrailsCard extends LoamCardBase {
   }
 
   _render() {
-    const rows = (this._results || []).map((result) => this._rowHtml(result)).join("");
+    const rows = this._sortedResults().map((result) => this._rowHtml(result)).join("");
     const title = this._config.title
       ? `<div class="title">${escapeHtml(this._config.title)}</div>`
       : "";
@@ -622,6 +647,13 @@ class LoamTrailsCard extends LoamCardBase {
     this.shadowRoot.querySelectorAll(".row").forEach((row) =>
       row.addEventListener("click", () => this._toggle(row.dataset.entity)),
     );
+  }
+
+  _sortedResults() {
+    const compare = SORTS[this._config.sort] || SORTS.config;
+    return (this._results || [])
+      .map((result) => ({ ...result, dryness: result.data ? currentDryness(result.data) : null }))
+      .sort(compare);
   }
 
   _toggle(entityId) {

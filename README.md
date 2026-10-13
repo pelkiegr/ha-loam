@@ -53,6 +53,7 @@ days_back: 3          # optional, history shown before "now" (1–10)
 type: custom:loam-trails-card
 title: Trail conditions   # optional
 days_back: 3              # optional, history in the expanded chart
+sort: rideable            # optional: config (as listed, default), rideable, name
 entities:
   - sensor.green_mountain_park_status
   - sensor.dakota_ridge_status
